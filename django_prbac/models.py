@@ -1,0 +1,155 @@
+# Use modern Python
+from __future__ import unicode_literals, absolute_import, print_function
+
+# Standard Library Imports
+
+# Django imports
+from django.db import models
+
+# External Library imports
+import json_field
+
+# Local imports
+from django_prbac.fields import StringListField, StringSetField
+
+
+__all__ = [
+    'Role',
+    'Grant',
+]
+
+
+class Role(models.Model):
+    """
+    A PRBAC role, aka a Role parameterized by a set of named variables. Roles
+    also model privileges:  They differ only in that privileges only refer
+    to real-world consequences when all parameters are instantiated.
+    """
+
+
+    # Databaes fields
+    # ---------------
+
+    name = models.CharField(
+        max_length=256,
+        help_text='The formal name for this role, which should be unique',
+        unique=True,
+    )
+
+    friendly_name = models.CharField(
+        max_length=256,
+        help_text='The friendly name for this role to present to users; this need not be unique.',
+    )
+
+    description = models.TextField(
+        help_text='A long-form description of the intended semantics of this role.',
+        default='',
+    )
+
+    parameters = StringSetField(
+        help_text='A set of strings which are the parameters for this role.',
+        default=[],
+    )
+
+
+    # Methods
+    # -------
+
+
+    def instantiate(self, assignment):
+        """
+        An instantiation of this role with some parameters fixed via the provided assignments.
+        """
+        filtered_assignment = dict([(key, assignment[key]) for key in self.parameters & set(assignment.keys())])
+        return InstantiatedRole(self, filtered_assignment)
+
+
+class Grant(models.Model):
+    """
+    A parameterized membership between a sub-role and super-role.
+    The parameters applied to the super-role are all those.
+    """
+
+
+    # Database Fields
+    # ---------------
+
+    from_role = models.ForeignKey(
+        'Role',
+        help_text='The sub-role begin granted membership or permission',
+        related_name='memberships_granted',
+    )
+
+    to_role = models.ForeignKey(
+        'Role',
+        help_text='The super-role or permission being given',
+        related_name='members',
+    )
+
+    assignment = json_field.JSONField(
+        help_text='Assignment from parameters (strings) to values (any JSON-compatible value)',
+        default={},
+    )
+
+
+    # Methods
+    # -------
+
+    def instantiated_to_role(self, assignment):
+        """
+        Returns the super-role instantiated with the parameters of the membership
+        composed with the `parameters` passed in.
+        """
+        filtered_assignment = dict([(key, assignment[key]) for key in self.to_role.parameters & set(assignment.keys())])
+        composed_assignment = {}
+        composed_assignment.update(filtered_assignment)
+        composed_assignment.update(self.assignment)
+        return self.to_role.instantiate(composed_assignment)
+
+
+class InstantiatedRole(object):
+    """
+    A parameterized role along with some parameters that are fixed. Note that this is
+    not a model but only a transient Python object.
+    """
+
+
+    def __init__(self, role, assignment):
+        self.role = role
+        self.assignment = assignment
+        self.parameters = self.role.parameters - set(self.assignment.keys())
+
+
+    def instantiate(self, assignment):
+        """
+        This role further instantiated with the additional assignment.
+        Note that any parameters that are already fixed are not actually
+        available for being assigned, so will _not_ change.
+        """
+        filtered_assignment = dict([(key, assignment[key]) for key in self.parameters & set(assignment.keys())])
+        composed_assignment = {}
+        composed_assignment.update(filtered_assignment)
+        composed_assignment.update(self.assignment)
+        return InstantiatedRole(composed_assignment)
+
+
+    def has_privilege(self, privilege):
+        """
+        True if this instantiated role is allowed the privilege passed in,
+        (which is itself an InstantiatedRole)
+        """
+
+        if self == privilege:
+            return True
+
+        for membership in self.role.memberships_granted.all():
+            if membership.instantiated_to_role(self.assignment).has_privilege(privilege):
+                return True
+
+        return False
+
+
+    def __eq__(self, other):
+        return self.role.name == other.role.name and self.assignment == other.assignment
+
+
