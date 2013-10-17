@@ -55,6 +55,17 @@ class TestRole(TestCase):
         self.assertFalse(subrole.instantiate({}).has_privilege(superrole2.instantiate({})))
 
 
+    # TODO: The custom field types storing the parameters are a bit wonky; fix them first
+    # def test_has_permission_immediate_params(self):
+    #     subrole = arbitrary.role()
+    #     superrole1 = arbitrary.role(parameters=set(['one']))
+    #     grant = arbitrary.grant(to_role=superrole1, from_role=subrole, assignment=dict(one='foo'))
+    #
+    #     print(subrole.memberships_granted.all())
+    #
+    #     self.assertTrue(subrole.instantiate({}).has_privilege(superrole1.instantiate(dict(one='foo'))))
+    #     self.assertFalse(subrole.instantiate({}).has_privilege(superrole1.instantiate(dict(one='baz'))))
+
 class TestGrant(TestCase):
 
     def test_instantiated_to_role_smoke_test(self):

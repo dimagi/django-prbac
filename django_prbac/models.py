@@ -16,6 +16,7 @@ from django_prbac.fields import StringListField, StringSetField
 __all__ = [
     'Role',
     'Grant',
+    'RoleInstance',
 ]
 
 
@@ -61,7 +62,10 @@ class Role(models.Model):
         An instantiation of this role with some parameters fixed via the provided assignments.
         """
         filtered_assignment = dict([(key, assignment[key]) for key in self.parameters & set(assignment.keys())])
-        return InstantiatedRole(self, filtered_assignment)
+        return RoleInstance(self, filtered_assignment)
+
+    def __repr__(self):
+        return 'Role(%r, parameters=%r)' % (self.name, self.parameters)
 
 
 class Grant(models.Model):
@@ -106,8 +110,10 @@ class Grant(models.Model):
         composed_assignment.update(self.assignment)
         return self.to_role.instantiate(composed_assignment)
 
+    def __repr__(self):
+        return 'Grant(from_role=%r, to_role=%r, assignment=%r)' % (self.from_role, self.to_role, self.assignment)
 
-class InstantiatedRole(object):
+class RoleInstance(object):
     """
     A parameterized role along with some parameters that are fixed. Note that this is
     not a model but only a transient Python object.
@@ -117,6 +123,7 @@ class InstantiatedRole(object):
     def __init__(self, role, assignment):
         self.role = role
         self.assignment = assignment
+        self.name = self.role.name
         self.parameters = self.role.parameters - set(self.assignment.keys())
 
 
@@ -130,13 +137,13 @@ class InstantiatedRole(object):
         composed_assignment = {}
         composed_assignment.update(filtered_assignment)
         composed_assignment.update(self.assignment)
-        return InstantiatedRole(composed_assignment)
+        return RoleInstance(composed_assignment)
 
 
     def has_privilege(self, privilege):
         """
         True if this instantiated role is allowed the privilege passed in,
-        (which is itself an InstantiatedRole)
+        (which is itself an RoleInstance)
         """
 
         if self == privilege:
@@ -152,4 +159,5 @@ class InstantiatedRole(object):
     def __eq__(self, other):
         return self.role.name == other.role.name and self.assignment == other.assignment
 
-
+    def __repr__(self):
+        return 'RoleInstance(%r, parameters=%r, assignment=%r)' % (self.name, self.parameters, self.assignment)
