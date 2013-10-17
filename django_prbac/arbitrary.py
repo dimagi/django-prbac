@@ -11,6 +11,7 @@ from django_prbac.models import *
 __all__ = [
     'role',
     'grant',
+    'unique_name',
 ]
 
 def instantiate(generator_or_value):
@@ -29,8 +30,10 @@ def arbitrary_name():
     return choice(['foo', 'bar', 'baz', 'zizzle', 'zazzle'])
 
 
-def arbitrary_unique_name():
-    return arbitrary_name() + '-' + uuid.uuid4().hex
+def arbitrary_unique_name(prefix=None, suffix=None):
+    prefix = instantiate(prefix or '')
+    suffix = instantiate(suffix or '')
+    return prefix + arbitrary_name() + uuid.uuid4().hex + suffix
 
 
 def arbitrary_role(name=None, friendly_name=None, save=True, **kwargs):
@@ -66,3 +69,4 @@ def arbitrary_grant(from_role=None, to_role=None, save=True, **kwargs):
 
 role = arbitrary_role
 grant = arbitrary_grant
+unique_name = arbitrary_unique_name
