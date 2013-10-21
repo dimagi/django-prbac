@@ -12,7 +12,7 @@ class StringListField(six.with_metaclass(models.SubfieldBase, models.TextField))
 
     # TODO thought: If Python had polymorphism this ought be "Serialize a => Field (List a)"
 
-    def is_already_python(self, value):
+    def is_string_list(self, value):
         return isinstance(value, list) and all([isinstance(v, six.string_types) for v in value])
 
     def to_python(self, value):
@@ -25,7 +25,7 @@ class StringListField(six.with_metaclass(models.SubfieldBase, models.TextField))
         """
 
         # Already the appropriate python type
-        if self.is_already_python(value):
+        if self.is_string_list(value):
             return value
 
         # First let TextField do whatever it needs to do
@@ -33,12 +33,12 @@ class StringListField(six.with_metaclass(models.SubfieldBase, models.TextField))
 
         if isinstance(value, six.string_types):
             deserialized = simplejson.loads(value)
-            if self.is_already_python(deserialized):
+            if self.is_string_list(deserialized):
                 return deserialized
             else:
-                raise ValueError('Invalid value for StringListField: %r does not deserialize to strin glist' % value)
+                raise ValueError('Invalid value for StringListField: %r does not deserialize to string list' % value)
         else:
-            raise ValueError('Invalid value for StringListField: %r is neither the write type nor deserializable' % value)
+            raise ValueError('Invalid value for StringListField: %r is neither the correct type nor deserializable' % value)
 
     def get_prep_value(self, value):
         if not isinstance(value, list):
@@ -58,7 +58,7 @@ class StringSetField(six.with_metaclass(models.SubfieldBase, StringListField)):
 
     # TODO thought: If Python had polymorphism this ought be "Serialize a => Field (List a)"
 
-    def is_already_python(self, value):
+    def is_string_set(self, value):
         return isinstance(value, set) and all([isinstance(v, six.string_types) for v in value])
 
     def to_python(self, value):
@@ -71,13 +71,14 @@ class StringSetField(six.with_metaclass(models.SubfieldBase, StringListField)):
         """
 
         # Already the appropriate python type
-        if self.is_already_python(value):
+        if self.is_string_set(value):
             return value
 
         # First let StringListField do whatever it needs to do; this will now be a string list
         try:
-            value = super(StringListField, self).to_python(value)
-        except ValueError:
+            oldval = value
+            value = super(StringSetField, self).to_python(value)
+        except ValueError as exc:
             raise ValueError('Invalid value for StringSetField: %r' % value)
 
         return set(value)
@@ -86,4 +87,4 @@ class StringSetField(six.with_metaclass(models.SubfieldBase, StringListField)):
         if not isinstance(value, set) or any([not isinstance(v, six.string_types) for v in value]):
             raise ValueError('Invalid value %r for StringSetField' % value)
         else:
-            return super(StringSetField, self).get_prep_value(list(value))
+            return super(StringSetField, self).get_prep_value(sorted(value))
