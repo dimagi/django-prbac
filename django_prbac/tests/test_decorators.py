@@ -63,20 +63,19 @@ class TestDecorators(TestCase):
             view(request)
 
 
-    # TODO: The fields for parameters are still wonky. Test them first.
-    #def test_requires_privilege_wrong_param(self):
-    #
-    #    @requires_privilege(self.zazzle_privilege.name, domain='zizzle')
-    #    def view(request, *args, **kwargs):
-    #        pass
-    #
-    #    requestor_role = arbitrary.role()
-    #    arbitrary.grant(from_role=requestor_role, to_role=self.zazzle_privilege, assignment=dict(domain='whapwhap'))
-    #
-    #    request = HttpRequest()
-    #    request.role = requestor_role.instantiate({})
-    #    with self.assertRaises(PermissionDenied):
-    #        view(request)
+    def test_requires_privilege_wrong_param(self):
+
+       @requires_privilege(self.zazzle_privilege.name, domain='zizzle')
+       def view(request, *args, **kwargs):
+           pass
+
+       requestor_role = arbitrary.role()
+       arbitrary.grant(from_role=requestor_role, to_role=self.zazzle_privilege, assignment=dict(domain='whapwhap'))
+
+       request = HttpRequest()
+       request.role = requestor_role.instantiate({})
+       with self.assertRaises(PermissionDenied):
+           view(request)
 
     def test_requires_privilege_ok(self):
 
