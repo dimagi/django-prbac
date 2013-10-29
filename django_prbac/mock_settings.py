@@ -1,5 +1,11 @@
+"""
+Settings just for running the django-prbac tests or checking out
+the admin site.
+"""
 
 SECRET_KEY='Not a secret key at all, actually'
+
+DEBUG=True
 
 DATABASES = {
     'default': {
@@ -9,6 +15,20 @@ DATABASES = {
 }
 
 INSTALLED_APPS = [
-    'django_prbac',
+    # Django apps necessary to run the admin site
+    'django.contrib.auth',
+    'django.contrib.admin',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.staticfiles',
+
+    # And south
     'south',
+
+    # And this app
+    'django_prbac',
 ]
+
+STATIC_URL='/static/'
+
+ROOT_URLCONF='django_prbac.urls'
