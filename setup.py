@@ -12,5 +12,6 @@ setup(
         'django>=1.3.7',
         'django-json-field>=0.5.5',
         'simplejson',
+        'South',
     ],
 )
