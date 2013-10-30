@@ -19,10 +19,18 @@ class TestRole(TestCase):
         subrole = arbitrary.role()
         superrole1 = arbitrary.role()
         superrole2 = arbitrary.role()
-        grant = arbitrary.grant(to_role=superrole1, from_role=subrole)
+        arbitrary.grant(to_role=superrole1, from_role=subrole)
 
+        # A few ways of saying the same thing
         self.assertTrue(subrole.instantiate({}).has_privilege(superrole1.instantiate({})))
+        self.assertTrue(subrole.has_privilege(superrole1.instantiate({})))
+        self.assertTrue(subrole.instantiate({}).has_privilege(superrole1))
+        self.assertTrue(subrole.has_privilege(superrole1))
+
         self.assertFalse(subrole.instantiate({}).has_privilege(superrole2.instantiate({})))
+        self.assertFalse(subrole.has_privilege(superrole2.instantiate({})))
+        self.assertFalse(subrole.instantiate({}).has_privilege(superrole2))
+        self.assertFalse(subrole.has_privilege(superrole2))
 
 
     def test_has_permission_transitive_no_params(self):
@@ -30,11 +38,19 @@ class TestRole(TestCase):
         midrole = arbitrary.role()
         superrole1 = arbitrary.role()
         superrole2 = arbitrary.role()
-        grant = arbitrary.grant(to_role=midrole, from_role=subrole)
-        grant = arbitrary.grant(to_role=superrole1, from_role=midrole)
+        arbitrary.grant(to_role=midrole, from_role=subrole)
+        arbitrary.grant(to_role=superrole1, from_role=midrole)
 
+        # A few ways of saying the same thing
         self.assertTrue(subrole.instantiate({}).has_privilege(superrole1.instantiate({})))
+        self.assertTrue(subrole.has_privilege(superrole1.instantiate({})))
+        self.assertTrue(subrole.instantiate({}).has_privilege(superrole1))
+        self.assertTrue(subrole.has_privilege(superrole1))
+
         self.assertFalse(subrole.instantiate({}).has_privilege(superrole2.instantiate({})))
+        self.assertFalse(subrole.has_privilege(superrole2.instantiate({})))
+        self.assertFalse(subrole.instantiate({}).has_privilege(superrole2))
+        self.assertFalse(subrole.has_privilege(superrole2))
 
 
     def test_has_permission_far_transitive_no_params(self):
@@ -58,12 +74,13 @@ class TestRole(TestCase):
     def test_has_permission_immediate_params(self):
         subrole = arbitrary.role()
         superrole1 = arbitrary.role(parameters=set(['one']))
-        grant = arbitrary.grant(to_role=superrole1, from_role=subrole, assignment=dict(one='foo'))
+        arbitrary.grant(to_role=superrole1, from_role=subrole, assignment=dict(one='foo'))
 
         print(subrole.memberships_granted.all())
 
         self.assertTrue(subrole.instantiate({}).has_privilege(superrole1.instantiate(dict(one='foo'))))
         self.assertFalse(subrole.instantiate({}).has_privilege(superrole1.instantiate(dict(one='baz'))))
+
 
 class TestGrant(TestCase):
 

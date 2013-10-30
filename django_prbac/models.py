@@ -64,6 +64,22 @@ class Role(models.Model):
         filtered_assignment = dict([(key, assignment[key]) for key in self.parameters & set(assignment.keys())])
         return RoleInstance(self, filtered_assignment)
 
+
+    def has_privilege(self, privilege):
+        """
+        Shortcut for checking privileges easily for roles with no params (aka probably users)
+        """
+
+        return self.instantiate({}).has_privilege(privilege)
+
+    @property
+    def assignment(self):
+        """
+        A Role stored in the database always has an empty assignment.
+        """
+
+        return {}
+
     def __repr__(self):
         return 'Role(%r, parameters=%r)' % (self.name, self.parameters)
 
@@ -157,7 +173,8 @@ class RoleInstance(object):
 
 
     def __eq__(self, other):
-        return self.role.name == other.role.name and self.assignment == other.assignment
+        return self.name == other.name and self.assignment == other.assignment
+
 
     def __repr__(self):
         return 'RoleInstance(%r, parameters=%r, assignment=%r)' % (self.name, self.parameters, self.assignment)

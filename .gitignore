@@ -50,3 +50,5 @@ nosetests.xml
 # Excel
 ~*.xlsx
 
+/docs/_build
+/django-prbac.db

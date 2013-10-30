@@ -27,7 +27,8 @@ class StringListField(six.with_metaclass(models.SubfieldBase, models.TextField))
 
     def to_python(self, value):
         """
-        Handles exactly two cases:
+        Handles exactly two cases.
+
         1. The value is already a (unicode, not bytes) string list.
            - then it is returned as-is
         2. The value is a string (not super sure how Django deals w/ database fields w.r.t. unicode)
@@ -73,7 +74,8 @@ class StringSetField(six.with_metaclass(models.SubfieldBase, StringListField)):
 
     def to_python(self, value):
         """
-        Handles exactly two cases:
+        Handles exactly two cases.
+
         1. The value is already a (unicode, not bytes) string set.
            - then it is returned as-is
         2. The value is a string (not super sure how Django deals w/ database fields w.r.t. unicode)
