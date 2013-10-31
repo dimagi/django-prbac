@@ -44,11 +44,12 @@ class Role(models.Model):
 
     description = models.TextField(
         help_text='A long-form description of the intended semantics of this role.',
+        blank=True,
         default='',
     )
 
     parameters = StringSetField(
-        help_text='A set of strings which are the parameters for this role.',
+        help_text='A set of strings which are the parameters for this role. Entered as a JSON list.',
         default=[],
     )
 
@@ -82,6 +83,9 @@ class Role(models.Model):
 
     def __repr__(self):
         return 'Role(%r, parameters=%r)' % (self.name, self.parameters)
+
+    def __unicode__(self):
+        return '%s (%s)' % (self.friendly_name, self.name)
 
 
 class Grant(models.Model):

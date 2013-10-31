@@ -4,12 +4,34 @@ from __future__ import unicode_literals, absolute_import, print_function
 # System imports
 
 # Django imports
-from django.forms import ValidationError, Field
+from django.forms import ValidationError, Field, TextInput
 
 # External libraries
 import six
-import csv
-import simplejson
+
+# Local imports
+import django_prbac.csv
+
+
+class StringListInput(TextInput):
+    def render(self, name, value, attrs=None):
+        print('poops', name, value)
+        if isinstance(value, six.string_types):
+            return super(StringListInput, self).render(name, value)
+        else:
+            rendered_value = django_prbac.csv.line_to_string(list(value))
+            return super(StringListInput, self).render(name, rendered_value)
+
+
+class StringSetInput(TextInput):
+    def render(self, name, value, attrs=None):
+        print('poops', name, value)
+        if isinstance(value, six.string_types):
+            return super(StringSetInput, self).render(name, value)
+        else:
+            rendered_value = django_prbac.csv.line_to_string(sorted(list(value)))
+            return super(StringSetInput, self).render(name, rendered_value)
+
 
 class StringListFormField(Field):
     """
@@ -18,7 +40,9 @@ class StringListFormField(Field):
     def __init__(self, quotechar=None, skipinitialspace=None, *args, **kwargs):
         self.quotechar = (quotechar or '"').encode('utf-8') # csv requires bytes, not a string
         self.skipinitialspace = True if skipinitialspace is None else skipinitialspace
-        super(StringListFormField, self).__init__(*args, **kwargs)
+        defaults = {'widget': StringListInput}
+        defaults.update(kwargs)
+        super(StringListFormField, self).__init__(*args, **defaults)
 
     def is_string_list(self, value):
         return isinstance(value, list) and all([isinstance(v, six.string_types) for v in value])
@@ -32,7 +56,12 @@ class StringListFormField(Field):
 
         else:
             try:
-                for row in csv.reader([value], quotechar=self.quotechar, skipinitialspace=self.skipinitialspace):
-                    return [s.decode('utf-8') for s in row]
+                return django_prbac.csv.parse_line(
+                    value,
+                    skipinitialspace=self.skipinitialspace,
+                    quotechar=self.quotechar,
+                )
+
             except ValueError:
                 raise ValidationError('%r cannot be converted to a string list' % value)
+

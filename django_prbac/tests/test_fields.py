@@ -20,24 +20,13 @@ class TestStringListField(TestCase):
 
         self.assertFalse(field.is_string_list("boo"))
         self.assertFalse(field.is_string_list(3))
-        self.assertFalse(field.is_string_list('["A", "B"]'))
+        self.assertFalse(field.is_string_list('"A","B"'))
+
 
     def test_to_python_convert(self):
         field = StringListField('testing')
-
-        # This that are legitimate to store in the DB
-        self.assertEqual(field.to_python('[]'), [])
-        self.assertEqual(field.to_python('["A","B","C"]'), ['A', 'B', 'C'])
-
-        # Erroneous values that should never end up in the database
-        with self.assertRaises(ValueError):
-            field.to_python('[1,2,3]')
-
-        with self.assertRaises(ValueError):
-            field.to_python('"hello"')
-
-        with self.assertRaises(ValueError):
-            field.to_python('{"hi": "foo"}')
+        self.assertEqual(field.to_python(''), [])
+        self.assertEqual(field.to_python('"A","B","C"'), ['A', 'B', 'C'])
 
 
     def test_to_python_already_done(self):
@@ -55,7 +44,8 @@ class TestStringListField(TestCase):
     def test_get_prep_value_convert(self):
         field = StringListField('testing')
 
-        self.assertEqual(field.get_prep_value(["A", "B", "C"]), '["A", "B", "C"]')
+        self.assertEqual(field.get_prep_value(["A", "B", "C"]), 'A,B,C')
+        self.assertEqual(field.get_prep_value(["A", "B,C", "D"]), 'A,"B,C",D')
 
         with self.assertRaises(ValueError):
             field.get_prep_value(5)
@@ -81,18 +71,8 @@ class TestStringSetField(TestCase):
         field = StringSetField('testing')
 
         # This that are legitimate to store in the DB
-        self.assertEqual(field.to_python('[]'), set())
-        self.assertEqual(field.to_python('["A","B","C"]'), set(['A', 'B', 'C']))
-
-        # Erroneous values that should never end up in the database
-        with self.assertRaises(ValueError):
-            field.to_python('[1,2,3]')
-
-        with self.assertRaises(ValueError):
-            field.to_python('"hello"')
-
-        with self.assertRaises(ValueError):
-            field.to_python('{"hi": "foo"}')
+        self.assertEqual(field.to_python(''), set())
+        self.assertEqual(field.to_python('"A","B","C"'), set(['A', 'B', 'C']))
 
 
     def test_to_python_already_done(self):
@@ -110,7 +90,8 @@ class TestStringSetField(TestCase):
     def test_get_prep_value_convert(self):
         field = StringSetField('testing')
 
-        self.assertEqual(field.get_prep_value(set(["A", "B", "C"])), '["A", "B", "C"]')
+        self.assertEqual(field.get_prep_value(set(["A", "B", "C"])), 'A,B,C')
+        self.assertEqual(field.get_prep_value(set(["C", "B", "A"])), 'A,B,C')
 
         with self.assertRaises(ValueError):
             field.get_prep_value(5)
