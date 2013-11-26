@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='django-prbac',
-    version='0.0.1',
+    version='0.0.2',
     description='Parameterized Role-Based Access Control for Django',
     author='Dimagi',
     author_email='information@dimagi.com',
