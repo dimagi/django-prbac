@@ -58,7 +58,7 @@ class TestRole(TestCase):
         superrole1 = arbitrary.role()
         superrole2 = arbitrary.role()
 
-        midroles = [arbitrary.role() for __ in xrange(0, 10)]
+        midroles = [arbitrary.role() for __ in range(0, 10)]
 
         arbitrary.grant(subrole, midroles[0])
         arbitrary.grant(midroles[-1], superrole1)
@@ -75,8 +75,6 @@ class TestRole(TestCase):
         subrole = arbitrary.role()
         superrole1 = arbitrary.role(parameters=set(['one']))
         arbitrary.grant(to_role=superrole1, from_role=subrole, assignment=dict(one='foo'))
-
-        print(subrole.memberships_granted.all())
 
         self.assertTrue(subrole.instantiate({}).has_privilege(superrole1.instantiate(dict(one='foo'))))
         self.assertFalse(subrole.instantiate({}).has_privilege(superrole1.instantiate(dict(one='baz'))))

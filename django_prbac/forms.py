@@ -38,7 +38,7 @@ class StringListFormField(Field):
     A Django form field for lists of strings separated by commas, quotes optional
     """
     def __init__(self, quotechar=None, skipinitialspace=None, *args, **kwargs):
-        self.quotechar = (quotechar or '"').encode('utf-8') # csv requires bytes, not a string
+        self.quotechar = (quotechar or '"')
         self.skipinitialspace = True if skipinitialspace is None else skipinitialspace
         defaults = {'widget': StringListInput}
         defaults.update(kwargs)
