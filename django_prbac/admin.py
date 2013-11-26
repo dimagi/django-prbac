@@ -39,15 +39,15 @@ class RoleAdmin(admin.ModelAdmin):
     parameters__csv.admin_order_field = 'parameters'
 
     list_display = [
+        'slug',
         'name',
-        'friendly_name',
         'parameters__csv',
         'description',
     ]
 
     search_fields = [
+        'slug',
         'name',
-        'friendly_name',
         'parameters',
         'description',
     ]

@@ -19,8 +19,13 @@ __all__ = [
     'RoleInstance',
 ]
 
+class ValidatingModel(object):
+    def save(self, force_insert=False, force_update=False, **kwargs):
+        if not (force_insert or force_update):
+            self.full_clean() # Will raise ValidationError if needed
+        super(ValidatingModel, self).save(force_insert, force_update, **kwargs)
 
-class Role(models.Model):
+class Role(ValidatingModel, models.Model):
     """
     A PRBAC role, aka a Role parameterized by a set of named variables. Roles
     also model privileges:  They differ only in that privileges only refer
@@ -31,13 +36,13 @@ class Role(models.Model):
     # Databaes fields
     # ---------------
 
-    name = models.CharField(
+    slug = models.CharField(
         max_length=256,
-        help_text='The formal name for this role, which should be unique',
+        help_text='The formal slug for this role, which should be unique',
         unique=True,
     )
 
-    friendly_name = models.CharField(
+    name = models.CharField(
         max_length=256,
         help_text='The friendly name for this role to present to users; this need not be unique.',
     )
@@ -50,6 +55,7 @@ class Role(models.Model):
 
     parameters = StringSetField(
         help_text='A set of strings which are the parameters for this role. Entered as a JSON list.',
+        blank=True,
         default=[],
     )
 
@@ -82,13 +88,13 @@ class Role(models.Model):
         return {}
 
     def __repr__(self):
-        return 'Role(%r, parameters=%r)' % (self.name, self.parameters)
+        return 'Role(%r, parameters=%r)' % (self.slug, self.parameters)
 
     def __unicode__(self):
-        return '%s (%s)' % (self.friendly_name, self.name)
+        return '%s (%s)' % (self.name, self.slug)
 
 
-class Grant(models.Model):
+class Grant(ValidatingModel, models.Model):
     """
     A parameterized membership between a sub-role and super-role.
     The parameters applied to the super-role are all those.
@@ -112,6 +118,7 @@ class Grant(models.Model):
 
     assignment = json_field.JSONField(
         help_text='Assignment from parameters (strings) to values (any JSON-compatible value)',
+        blank=True,
         default={},
     )
 
@@ -143,6 +150,7 @@ class RoleInstance(object):
     def __init__(self, role, assignment):
         self.role = role
         self.assignment = assignment
+        self.slug = self.role.slug
         self.name = self.role.name
         self.parameters = self.role.parameters - set(self.assignment.keys())
 
@@ -177,8 +185,8 @@ class RoleInstance(object):
 
 
     def __eq__(self, other):
-        return self.name == other.name and self.assignment == other.assignment
+        return self.slug == other.slug and self.assignment == other.assignment
 
 
     def __repr__(self):
-        return 'RoleInstance(%r, parameters=%r, assignment=%r)' % (self.name, self.parameters, self.assignment)
+        return 'RoleInstance(%r, parameters=%r, assignment=%r)' % (self.slug, self.parameters, self.assignment)

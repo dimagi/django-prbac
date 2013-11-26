@@ -5,11 +5,11 @@ from __future__ import unicode_literals, absolute_import, print_function
 from django_prbac.exceptions import PermissionDenied
 from django_prbac.models import Role
 
-def requires_privilege(role_name, **assignment):
+def requires_privilege(slug, **assignment):
     def decorate(fn):
         """
         Returns a function equivalent to `fn` but that requires
-        a role with name `role_name` to be reachable from `request.role`
+        a role with slug `slug` to be reachable from `request.role`
         with the parameters specified in `assignment`
         (in a parameterizes fashion)
         """
@@ -18,7 +18,7 @@ def requires_privilege(role_name, **assignment):
             if not hasattr(request, 'role'):
                 raise PermissionDenied()
 
-            roles = Role.objects.filter(name=role_name)
+            roles = Role.objects.filter(slug=slug)
             if not roles:
                 raise PermissionDenied()
 

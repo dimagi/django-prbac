@@ -13,14 +13,14 @@ from django_prbac import arbitrary
 class TestDecorators(TestCase):
 
     def setUp(self):
-        self.zazzle_privilege = arbitrary.role(name=arbitrary.unique_name('zazzle'), parameters=set(['domain']))
+        self.zazzle_privilege = arbitrary.role(slug=arbitrary.unique_slug('zazzle'), parameters=set(['domain']))
 
     def test_requires_privilege_no_current_role(self):
         """
         When a privilege is required but there is no role attached
         to the current request, permission is denied. No crashing.
         """
-        @requires_privilege(self.zazzle_privilege.name, domain='zizzle')
+        @requires_privilege(self.zazzle_privilege.slug, domain='zizzle')
         def view(request, *args, **kwargs):
             pass
 
@@ -51,7 +51,7 @@ class TestDecorators(TestCase):
         is denied
         """
 
-        @requires_privilege(self.zazzle_privilege.name, domain='zizzle')
+        @requires_privilege(self.zazzle_privilege.slug, domain='zizzle')
         def view(request, *args, **kwargs):
             pass
 
@@ -65,7 +65,7 @@ class TestDecorators(TestCase):
 
     def test_requires_privilege_wrong_param(self):
 
-       @requires_privilege(self.zazzle_privilege.name, domain='zizzle')
+       @requires_privilege(self.zazzle_privilege.slug, domain='zizzle')
        def view(request, *args, **kwargs):
            pass
 
@@ -79,7 +79,7 @@ class TestDecorators(TestCase):
 
     def test_requires_privilege_ok(self):
 
-        @requires_privilege(self.zazzle_privilege.name, domain='zizzle')
+        @requires_privilege(self.zazzle_privilege.slug, domain='zizzle')
         def view(request, *args, **kwargs):
             pass
 

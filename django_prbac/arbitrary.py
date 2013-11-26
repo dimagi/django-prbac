@@ -26,23 +26,23 @@ def instantiate(generator_or_value):
     else:
         return generator_or_value
 
-def arbitrary_name():
+def arbitrary_slug():
     return choice(['foo', 'bar', 'baz', 'zizzle', 'zazzle'])
 
 
-def arbitrary_unique_name(prefix=None, suffix=None):
+def arbitrary_unique_slug(prefix=None, suffix=None):
     prefix = instantiate(prefix or '')
     suffix = instantiate(suffix or '')
-    return prefix + arbitrary_name() + uuid.uuid4().hex + suffix
+    return prefix + arbitrary_slug() + uuid.uuid4().hex + suffix
 
 
-def arbitrary_role(name=None, friendly_name=None, save=True, **kwargs):
-    name = instantiate(name or arbitrary_unique_name)
-    friendly_name = instantiate(friendly_name or arbitrary_name)
+def arbitrary_role(slug=None, name=None, save=True, **kwargs):
+    slug = instantiate(slug or arbitrary_unique_slug)
+    name = instantiate(name or arbitrary_slug)
 
     role = Role(
+        slug=slug,
         name=name,
-        friendly_name=friendly_name,
         **kwargs
     )
 
@@ -69,4 +69,4 @@ def arbitrary_grant(from_role=None, to_role=None, save=True, **kwargs):
 
 role = arbitrary_role
 grant = arbitrary_grant
-unique_name = arbitrary_unique_name
+unique_slug = arbitrary_unique_slug
