@@ -158,6 +158,9 @@ class UserRole(ValidatingModel, models.Model):
     def has_privilege(self, privilege):
         return self.role.has_privilege(privilege)
 
+    def __eq__(self, other):
+        return self.user == other.user and self.role == other.role
+
     def __repr__(self):
         return 'UserRole(user=%r, role=%r)' % (self.user, self.role)
 

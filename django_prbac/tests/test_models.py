@@ -98,3 +98,20 @@ class TestGrant(TestCase):
         grant = arbitrary.grant(to_role=superrole, assignment={'two': 'goodbye'})
         self.assertEqual(grant.instantiated_to_role({}).assignment, {})
 
+
+class TestUserRole(TestCase):
+
+    def test_user_role_integration(self):
+        """
+        Basic smoke test of integration of PRBAC with django.contrib.auth
+        """
+        user = arbitrary.user()
+        role = arbitrary.role()
+        priv = arbitrary.role()
+        arbitrary.grant(from_role=role, to_role=priv)
+        user_role = arbitrary.user_role(user=user, role=role)
+
+        self.assertEquals(user.prbac_role, user_role)
+        self.assertTrue(user.prbac_role.has_privilege(role))
+        self.assertTrue(user.prbac_role.has_privilege(priv))
+
