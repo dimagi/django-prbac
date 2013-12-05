@@ -5,6 +5,9 @@ from __future__ import unicode_literals, absolute_import, print_function
 from random import choice
 import uuid
 
+# Django imports
+from django.contrib.auth.models import User
+
 # Local Imports
 from django_prbac.models import *
 
@@ -34,6 +37,22 @@ def arbitrary_unique_slug(prefix=None, suffix=None):
     prefix = instantiate(prefix or '')
     suffix = instantiate(suffix or '')
     return prefix + arbitrary_slug() + uuid.uuid4().hex + suffix
+
+
+def arbitrary_user(username=None, password=None, email=None, save=True, **kwargs):
+    username = instantiate(username or arbitrary_unique_slug)
+    password = instantiate(password or arbitrary_unique_slug)
+    email = instantiate(email) if email is not None else ('%s@%s.com' % (arbitrary_unique_slug(), arbitrary_unique_slug()))
+
+    user = User(username=username,
+                password=password,
+                email=email,
+                **kwargs)
+
+    if save:
+        user.save()
+
+    return user
 
 
 def arbitrary_role(slug=None, name=None, save=True, **kwargs):
@@ -67,6 +86,21 @@ def arbitrary_grant(from_role=None, to_role=None, save=True, **kwargs):
 
     return grant
 
+def arbitrary_user_role(user=None, role=None, save=True, **kwargs):
+    user = instantiate(user or arbitrary_user)
+    role = instantiate(role or arbitrary_role)
+
+    user_role = UserRole(user=user,
+                         role=role,
+                         **kwargs)
+
+    if save:
+        user_role.save()
+
+    return user_role
+
 role = arbitrary_role
 grant = arbitrary_grant
 unique_slug = arbitrary_unique_slug
+user = arbitrary_user
+user_role = arbitrary_user_role
