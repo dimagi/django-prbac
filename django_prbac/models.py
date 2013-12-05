@@ -5,6 +5,7 @@ from __future__ import unicode_literals, absolute_import, print_function
 
 # Django imports
 from django.db import models
+from django.contrib.auth.models import User
 
 # External Library imports
 import json_field
@@ -17,6 +18,7 @@ __all__ = [
     'Role',
     'Grant',
     'RoleInstance',
+    'UserRole',
 ]
 
 class ValidatingModel(object):
@@ -140,6 +142,26 @@ class Grant(ValidatingModel, models.Model):
     def __repr__(self):
         return 'Grant(from_role=%r, to_role=%r, assignment=%r)' % (self.from_role, self.to_role, self.assignment)
 
+
+class UserRole(ValidatingModel, models.Model):
+    """
+    A link between a django.contrib.auth.models.User and
+    a django_prbac.models.Role. They are kept to
+    one-to-one fields to make their use extremely simple:
+
+    request.user.prbac_role.has_privilege(...)
+    """
+
+    user = models.OneToOneField(User, related_name='prbac_role')
+    role = models.OneToOneField(Role, related_name='user')
+
+    def has_privilege(self, privilege):
+        return self.role.has_privilege(privilege)
+
+    def __repr__(self):
+        return 'UserRole(user=%r, role=%r)' % (self.user, self.role)
+
+
 class RoleInstance(object):
     """
     A parameterized role along with some parameters that are fixed. Note that this is
@@ -190,3 +212,5 @@ class RoleInstance(object):
 
     def __repr__(self):
         return 'RoleInstance(%r, parameters=%r, assignment=%r)' % (self.slug, self.parameters, self.assignment)
+
+
