@@ -153,7 +153,7 @@ class UserRole(ValidatingModel, models.Model):
     """
 
     user = models.OneToOneField(User, related_name='prbac_role')
-    role = models.OneToOneField(Role, related_name='user')
+    role = models.OneToOneField(Role, related_name='user_role')
 
     def has_privilege(self, privilege):
         return self.role.has_privilege(privilege)
