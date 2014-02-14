@@ -40,9 +40,9 @@ def arbitrary_unique_slug(prefix=None, suffix=None):
 
 
 def arbitrary_user(username=None, password=None, email=None, save=True, **kwargs):
-    username = instantiate(username or arbitrary_unique_slug)
-    password = instantiate(password or arbitrary_unique_slug)
-    email = instantiate(email) if email is not None else ('%s@%s.com' % (arbitrary_unique_slug(), arbitrary_unique_slug()))
+    username = instantiate(username or arbitrary_unique_slug)[:74]
+    password = instantiate(password or arbitrary_unique_slug)[:74]
+    email = instantiate(email) if email is not None else ('%s@%s.com' % (arbitrary_unique_slug(), arbitrary_unique_slug()))[:74]
 
     user = User(username=username,
                 password=password,
