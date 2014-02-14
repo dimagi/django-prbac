@@ -28,6 +28,9 @@ def requires_privilege(slug, **assignment):
             if request.role.has_privilege(privilege):
                 return fn(request, *args, **kwargs)
 
+            if not hasattr(request, 'user'):
+                raise Http404()
+
             try:
                 request.user.prbac_role
             except UserRole.DoesNotExist:
