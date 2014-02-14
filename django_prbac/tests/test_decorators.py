@@ -3,7 +3,7 @@ from __future__ import unicode_literals, absolute_import, print_function
 
 # Django imports
 from django.test import TestCase
-from django.http import HttpRequest, Http404
+from django.http import HttpRequest
 
 # Local imports
 from django_prbac.decorators import requires_privilege
@@ -25,7 +25,7 @@ class TestDecorators(TestCase):
             pass
 
         request = HttpRequest()
-        with self.assertRaises(Http404):
+        with self.assertRaises(PermissionDenied):
             view(request)
 
     def test_requires_privilege_no_such(self):
@@ -41,7 +41,7 @@ class TestDecorators(TestCase):
         requestor_role = arbitrary.role()
         request = HttpRequest()
         request.role = requestor_role
-        with self.assertRaises(Http404):
+        with self.assertRaises(PermissionDenied):
             view(request)
 
     def test_requires_privilege_denied(self):
@@ -59,7 +59,7 @@ class TestDecorators(TestCase):
 
         request = HttpRequest()
         request.role = requestor_role.instantiate({})
-        with self.assertRaises(Http404):
+        with self.assertRaises(PermissionDenied):
             view(request)
 
 
@@ -74,7 +74,7 @@ class TestDecorators(TestCase):
 
        request = HttpRequest()
        request.role = requestor_role.instantiate({})
-       with self.assertRaises(Http404):
+       with self.assertRaises(PermissionDenied):
            view(request)
 
     def test_requires_privilege_ok(self):
