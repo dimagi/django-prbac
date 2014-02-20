@@ -29,7 +29,7 @@ def requires_privilege(slug, **assignment):
             if request.role.has_privilege(privilege):
                 return fn(request, *args, **kwargs)
 
-            if not hasattr(request, 'user'):
+            if not hasattr(request, 'user') or not hasattr(request.user, 'prbac_role'):
                 raise PermissionDenied()
 
             try:
