@@ -4,7 +4,7 @@ from __future__ import unicode_literals, absolute_import, print_function
 # Local Imports
 from django.http import Http404
 from django_prbac.exceptions import PermissionDenied
-from django_prbac.models import Role, UserRole
+from django_prbac.utils import ensure_request_has_privilege
 
 
 def requires_privilege(slug, **assignment):
@@ -17,29 +17,7 @@ def requires_privilege(slug, **assignment):
         (in a parameterized fashion)
         """
         def wrapped(request, *args, **kwargs):
-
-            if not hasattr(request, 'role'):
-                raise PermissionDenied()
-
-            roles = Role.objects.filter(slug=slug)
-            if not roles:
-                raise PermissionDenied()
-
-            privilege = roles[0].instantiate(assignment)
-            if request.role.has_privilege(privilege):
-                return fn(request, *args, **kwargs)
-
-            if not hasattr(request, 'user') or not hasattr(request.user, 'prbac_role'):
-                raise PermissionDenied()
-
-            try:
-                request.user.prbac_role
-            except UserRole.DoesNotExist:
-                raise PermissionDenied()
-
-            if not request.user.prbac_role.has_privilege(privilege):
-                raise PermissionDenied()
-
+            ensure_request_has_privilege(request, slug, **assignment)
             return fn(request, *args, **kwargs)
 
         return wrapped
