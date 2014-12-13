@@ -32,3 +32,14 @@ def ensure_request_has_privilege(request, slug, **assignment):
 
     if not request.user.prbac_role.has_privilege(privilege):
         raise PermissionDenied()
+
+
+def has_privilege(request, slug, **assignment):
+    """
+    Returns true if the request has hte privilege, otherwise false
+    """
+    try:
+        ensure_request_has_privilege(request, slug, **assignment)
+        return True
+    except PermissionDenied:
+        return False
