@@ -78,10 +78,8 @@ class GrantAdmin(admin.ModelAdmin):
 
     search_fields = [
         'from_role__name',
-        'from_role__friendly_name',
         'from_role__description',
         'to_role__name',
-        'to_role__friendly_name',
         'to_role__description',
     ]
 
