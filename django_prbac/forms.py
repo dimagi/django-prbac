@@ -4,7 +4,7 @@ from __future__ import unicode_literals, absolute_import, print_function
 # System imports
 
 # Django imports
-from django.forms import ValidationError, Field, TextInput
+from django.forms import ValidationError, CharField, TextInput
 
 # External libraries
 import six
@@ -33,7 +33,7 @@ class StringSetInput(TextInput):
             return super(StringSetInput, self).render(name, rendered_value)
 
 
-class StringListFormField(Field):
+class StringListFormField(CharField):
     """
     A Django form field for lists of strings separated by commas, quotes optional
     """

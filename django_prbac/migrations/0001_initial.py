@@ -1,57 +1,56 @@
 # -*- coding: utf-8 -*-
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+import django_prbac.fields
+from django.conf import settings
+import json_field.fields
+import django_prbac.models
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'Role'
-        db.create_table(u'django_prbac_role', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=256)),
-            ('friendly_name', self.gf('django.db.models.fields.CharField')(max_length=256)),
-            ('description', self.gf('django.db.models.fields.TextField')(default=u'')),
-            ('parameters', self.gf('django_prbac.fields.StringSetField')(default=[])),
-        ))
-        db.send_create_signal(u'django_prbac', ['Role'])
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
 
-        # Adding model 'Grant'
-        db.create_table(u'django_prbac_grant', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('from_role', self.gf('django.db.models.fields.related.ForeignKey')(related_name=u'memberships_granted', to=orm['django_prbac.Role'])),
-            ('to_role', self.gf('django.db.models.fields.related.ForeignKey')(related_name=u'members', to=orm['django_prbac.Role'])),
-            ('assignment', self.gf('json_field.fields.JSONField')(default={})),
-        ))
-        db.send_create_signal(u'django_prbac', ['Grant'])
-
-
-    def backwards(self, orm):
-        # Deleting model 'Role'
-        db.delete_table(u'django_prbac_role')
-
-        # Deleting model 'Grant'
-        db.delete_table(u'django_prbac_grant')
-
-
-    models = {
-        u'django_prbac.grant': {
-            'Meta': {'object_name': 'Grant'},
-            'assignment': ('json_field.fields.JSONField', [], {'default': '{}'}),
-            'from_role': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "u'memberships_granted'", 'to': u"orm['django_prbac.Role']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'to_role': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "u'members'", 'to': u"orm['django_prbac.Role']"})
-        },
-        u'django_prbac.role': {
-            'Meta': {'object_name': 'Role'},
-            'description': ('django.db.models.fields.TextField', [], {'default': "u''"}),
-            'friendly_name': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '256'}),
-            'parameters': ('django_prbac.fields.StringSetField', [], {'default': '[]'})
-        }
-    }
-
-    complete_apps = ['django_prbac']
+    operations = [
+        migrations.CreateModel(
+            name='Grant',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('assignment', json_field.fields.JSONField(default={}, help_text='Assignment from parameters (strings) to values (any JSON-compatible value)', blank=True)),
+            ],
+            bases=(django_prbac.models.ValidatingModel, models.Model),
+        ),
+        migrations.CreateModel(
+            name='Role',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('slug', models.CharField(help_text='The formal slug for this role, which should be unique', unique=True, max_length=256)),
+                ('name', models.CharField(help_text='The friendly name for this role to present to users; this need not be unique.', max_length=256)),
+                ('description', models.TextField(default='', help_text='A long-form description of the intended semantics of this role.', blank=True)),
+                ('parameters', django_prbac.fields.StringSetField(default=[], help_text='A set of strings which are the parameters for this role. Entered as a JSON list.', blank=True)),
+            ],
+            bases=(django_prbac.models.ValidatingModel, models.Model),
+        ),
+        migrations.CreateModel(
+            name='UserRole',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('role', models.OneToOneField(related_name='user_role', to='django_prbac.Role')),
+                ('user', models.OneToOneField(related_name='prbac_role', to=settings.AUTH_USER_MODEL)),
+            ],
+            bases=(django_prbac.models.ValidatingModel, models.Model),
+        ),
+        migrations.AddField(
+            model_name='grant',
+            name='from_role',
+            field=models.ForeignKey(related_name='memberships_granted', to='django_prbac.Role', help_text='The sub-role begin granted membership or permission'),
+        ),
+        migrations.AddField(
+            model_name='grant',
+            name='to_role',
+            field=models.ForeignKey(related_name='members', to='django_prbac.Role', help_text='The super-role or permission being given'),
+        ),
+    ]

@@ -22,9 +22,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.staticfiles',
 
-    # And south
-    'south',
-
     # And this app
     'django_prbac',
 ]

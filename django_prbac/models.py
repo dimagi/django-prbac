@@ -1,11 +1,9 @@
 # Use modern Python
 from __future__ import unicode_literals, absolute_import, print_function
 
-# Standard Library Imports
-
 # Django imports
+from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import User
 
 # External Library imports
 import json_field
@@ -152,7 +150,7 @@ class UserRole(ValidatingModel, models.Model):
     request.user.prbac_role.has_privilege(...)
     """
 
-    user = models.OneToOneField(User, related_name='prbac_role')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='prbac_role')
     role = models.OneToOneField(Role, related_name='user_role')
 
     def has_privilege(self, privilege):

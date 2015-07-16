@@ -9,9 +9,8 @@ setup(
     url='http://github.com/dimagi/django-prbac',
     packages=['django_prbac'],
     install_requires=[
-        'django<1.7',
+        'django<1.8',
         'django-json-field>=0.5.5',
-        'simplejson',
-        'South',
+        'simplejson'
     ],
 )
