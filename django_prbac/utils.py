@@ -14,11 +14,10 @@ def has_privilege(request, slug, **assignment):
     if not hasattr(request, 'role'):
         return False
 
-    roles = Role.objects.filter(slug=slug)
-    if not roles:
+    privilege = Role.get_privilege(slug, assignment)
+    if privilege is None:
         return False
 
-    privilege = roles[0].instantiate(assignment)
     if request.role.has_privilege(privilege):
         return True
 

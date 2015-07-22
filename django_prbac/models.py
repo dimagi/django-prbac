@@ -2,9 +2,12 @@
 from __future__ import unicode_literals, absolute_import, print_function
 
 # Standard Library Imports
+import time
+import weakref
 
 # Django imports
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 
 # External Library imports
@@ -22,10 +25,12 @@ __all__ = [
 ]
 
 class ValidatingModel(object):
+
     def save(self, force_insert=False, force_update=False, **kwargs):
         if not (force_insert or force_update):
             self.full_clean() # Will raise ValidationError if needed
         super(ValidatingModel, self).save(force_insert, force_update, **kwargs)
+
 
 class Role(ValidatingModel, models.Model):
     """
@@ -33,6 +38,10 @@ class Role(ValidatingModel, models.Model):
     also model privileges:  They differ only in that privileges only refer
     to real-world consequences when all parameters are instantiated.
     """
+
+    PRIVILEGES_BY_SLUG = "DJANGO_PRBAC_PRIVELEGES"
+    ROLES_BY_ID = "DJANGO_PRBAC_ROLES"
+    _default_instance = lambda s:None
 
 
     # Databaes fields
@@ -65,28 +74,101 @@ class Role(ValidatingModel, models.Model):
     # Methods
     # -------
 
+    @classmethod
+    def get_cache(cls):
+        try:
+            cache = cls.cache
+        except AttributeError:
+            timeout = getattr(settings, 'DJANGO_PRBAC_CACHE_TIMEOUT', 60)
+            cache = cls.cache = DictCache(timeout)
+        return cache
+
+    @classmethod
+    def update_cache(cls):
+        roles = cls.objects.prefetch_related('memberships_granted').all()
+        roles = {role.id: role for role in roles}
+        for role in roles.values():
+            role._granted_privileges = privileges = []
+            # Prevent extra queries by manually linking grants and roles
+            # because Django 1.6 isn't smart enough to do this for us
+            for membership in role.memberships_granted.all():
+                membership.to_role = roles[membership.to_role_id]
+                membership.from_role = roles[membership.from_role_id]
+                privileges.append(membership.instantiated_to_role({}))
+        cache = cls.get_cache()
+        cache.set(cls.ROLES_BY_ID, roles)
+        cache.set(cls.PRIVILEGES_BY_SLUG,
+            {role.slug: role.instantiate({}) for role in roles.values()})
+
+    @classmethod
+    def get_privilege(cls, slug, assignment=None):
+        """
+        Optimized lookup of privilege by slug
+
+        This optimization is specifically geared toward cases where
+        `assignments` is empty.
+        """
+        cache = cls.get_cache()
+        privileges = cache.get(cls.PRIVILEGES_BY_SLUG)
+        if privileges is None:
+            cls.update_cache()
+            privileges = cache.get(cls.PRIVILEGES_BY_SLUG)
+        privilege = privileges.get(slug)
+        if privilege is None:
+            return None
+        if assignment:
+            return privilege.role.instantiate(assignment)
+        return privilege
+
+    def get_cached_role(self):
+        """
+        Optimized lookup of role by id
+        """
+        cache = self.get_cache()
+        roles = cache.get(self.ROLES_BY_ID)
+        if roles is None or self.id not in roles:
+            self.update_cache()
+            roles = cache.get(self.ROLES_BY_ID)
+        return roles[self.id]
+
+    def get_privileges(self, assignment):
+        if not assignment:
+            try:
+                return self._granted_privileges
+            except AttributeError:
+                pass
+        return [membership.instantiated_to_role(assignment)
+                for membership in self.memberships_granted.all()]
 
     def instantiate(self, assignment):
         """
         An instantiation of this role with some parameters fixed via the provided assignments.
         """
-        filtered_assignment = dict([(key, assignment[key]) for key in self.parameters & set(assignment.keys())])
-        return RoleInstance(self, filtered_assignment)
-
+        if assignment:
+            filtered_assignment = {key: assignment[key]
+                for key in self.parameters & set(assignment.keys())}
+        else:
+            value = self._default_instance()
+            if value is not None:
+                return value
+            filtered_assignment = assignment
+        value = RoleInstance(self, filtered_assignment)
+        if not filtered_assignment:
+            self._default_instance = weakref.ref(value)
+        return value
 
     def has_privilege(self, privilege):
         """
         Shortcut for checking privileges easily for roles with no params (aka probably users)
         """
-
-        return self.instantiate({}).has_privilege(privilege)
+        role = self.get_cached_role()
+        return role.instantiate({}).has_privilege(privilege)
 
     @property
     def assignment(self):
         """
         A Role stored in the database always has an empty assignment.
         """
-
         return {}
 
     def __repr__(self):
@@ -133,10 +215,12 @@ class Grant(ValidatingModel, models.Model):
         Returns the super-role instantiated with the parameters of the membership
         composed with the `parameters` passed in.
         """
-        filtered_assignment = dict([(key, assignment[key]) for key in self.to_role.parameters & set(assignment.keys())])
         composed_assignment = {}
-        composed_assignment.update(filtered_assignment)
-        composed_assignment.update(self.assignment)
+        if assignment:
+            for key in self.to_role.parameters & set(assignment.keys()):
+                composed_assignment[key] = assignment[key]
+        if self.assignment:
+            composed_assignment.update(self.assignment)
         return self.to_role.instantiate(composed_assignment)
 
     def __repr__(self):
@@ -171,14 +255,12 @@ class RoleInstance(object):
     not a model but only a transient Python object.
     """
 
-
     def __init__(self, role, assignment):
         self.role = role
         self.assignment = assignment
-        self.slug = self.role.slug
-        self.name = self.role.name
-        self.parameters = self.role.parameters - set(self.assignment.keys())
-
+        self.slug = role.slug
+        self.name = role.name
+        self.parameters = role.parameters - set(assignment.keys())
 
     def instantiate(self, assignment):
         """
@@ -186,12 +268,14 @@ class RoleInstance(object):
         Note that any parameters that are already fixed are not actually
         available for being assigned, so will _not_ change.
         """
-        filtered_assignment = dict([(key, assignment[key]) for key in self.parameters & set(assignment.keys())])
         composed_assignment = {}
-        composed_assignment.update(filtered_assignment)
-        composed_assignment.update(self.assignment)
+        if assignment:
+            for key in self.parameters & set(assignment.keys()):
+                composed_assignment[key] = assignment[key]
+        if self.assignment:
+            composed_assignment.update(self.assignment)
+        # this seems like a bug (wrong arguments). is this method ever called?
         return RoleInstance(composed_assignment)
-
 
     def has_privilege(self, privilege):
         """
@@ -202,18 +286,33 @@ class RoleInstance(object):
         if self == privilege:
             return True
 
-        for membership in self.role.memberships_granted.all():
-            if membership.instantiated_to_role(self.assignment).has_privilege(privilege):
-                return True
-
-        return False
-
+        return any(p.has_privilege(privilege)
+                   for p in self.role.get_privileges(self.assignment))
 
     def __eq__(self, other):
         return self.slug == other.slug and self.assignment == other.assignment
-
 
     def __repr__(self):
         return 'RoleInstance(%r, parameters=%r, assignment=%r)' % (self.slug, self.parameters, self.assignment)
 
 
+class DictCache(object):
+    """A simple in-memory dict cache
+
+    :param timeout: Number of seconds until an item in the cache expires.
+    """
+
+    def __init__(self, timeout=60):
+        self.timeout = timeout
+        self.data = {}
+
+    def get(self, key, default=None):
+        now = time.time()
+        value, expires = self.data.get(key, (default, now))
+        if now > expires:
+            self.data.pop(key)
+            return default
+        return value
+
+    def set(self, key, value):
+        self.data[key] = (value, time.time() + self.timeout)
