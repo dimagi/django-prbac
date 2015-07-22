@@ -6,40 +6,38 @@ from django_prbac.exceptions import PermissionDenied
 from django_prbac.models import Role, UserRole
 
 
-def ensure_request_has_privilege(request, slug, **assignment):
+def has_privilege(request, slug, **assignment):
     """
-    Ensures that an HttpRequest object has the privilege specified by slug.
-    If it does not, it throws a PermissionDenied Exception.
+    Returns true if the request has the privilege specified by slug,
+    otherwise false
     """
     if not hasattr(request, 'role'):
-        raise PermissionDenied()
+        return False
 
     roles = Role.objects.filter(slug=slug)
     if not roles:
-        raise PermissionDenied()
+        return False
 
     privilege = roles[0].instantiate(assignment)
     if request.role.has_privilege(privilege):
-        return
+        return True
 
     if not hasattr(request, 'user') or not hasattr(request.user, 'prbac_role'):
-        raise PermissionDenied()
-
+        return False
     try:
         request.user.prbac_role
     except UserRole.DoesNotExist:
-        raise PermissionDenied()
-
-    if not request.user.prbac_role.has_privilege(privilege):
-        raise PermissionDenied()
-
-
-def has_privilege(request, slug, **assignment):
-    """
-    Returns true if the request has hte privilege, otherwise false
-    """
-    try:
-        ensure_request_has_privilege(request, slug, **assignment)
-        return True
-    except PermissionDenied:
         return False
+
+    return request.user.prbac_role.has_privilege(privilege)
+
+
+def ensure_request_has_privilege(request, slug, **assignment):
+    """
+    DEPRECATED
+
+    You most likely want `has_permission` or one of the
+    `requires_privilege` decorators.
+    """
+    if not has_privilege(request, slug, **assignment):
+        raise PermissionDenied()
