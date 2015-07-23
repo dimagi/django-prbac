@@ -43,18 +43,6 @@ class StringListField(six.with_metaclass(models.SubfieldBase, models.TextField))
         else:
             raise ValueError('Invalid value for StringListField: %r is neither the correct type nor deserializable' % value)
 
-    def get_prep_value(self, value):
-        """
-        Converts the value, which must be a string list, to a comma-separated string,
-        quoted appropriately. This format is private to the field type so it is not
-        exposed for customization or any such thing.
-        """
-
-        if not self.is_string_list(value):
-            raise ValueError('Invalid value for StringListField: %r' % value)
-        else:
-            return django_prbac.csv.line_to_string(value, lineterminator='')
-
     def value_to_string(self, obj):
         value = self._get_val_from_obj(obj)
         return self.get_prep_value(value)
@@ -106,8 +94,3 @@ class StringSetField(six.with_metaclass(models.SubfieldBase, StringListField)):
         value = self._get_val_from_obj(obj)
         return self.get_prep_value(value)
 
-    def get_prep_value(self, value):
-        if not self.is_string_set(value):
-            raise ValueError('Invalid value %r for StringSetField' % value)
-        else:
-            return super(StringSetField, self).get_prep_value(sorted(value))
