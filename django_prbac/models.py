@@ -316,3 +316,6 @@ class DictCache(object):
 
     def set(self, key, value):
         self.data[key] = (value, time.time() + self.timeout)
+
+    def clear(self):
+        self.data.clear()
