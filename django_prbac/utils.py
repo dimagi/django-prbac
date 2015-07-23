@@ -1,5 +1,6 @@
 # Use modern Python
 from __future__ import unicode_literals, absolute_import, print_function
+import warnings
 
 # Local Imports
 from django_prbac.exceptions import PermissionDenied
@@ -34,9 +35,11 @@ def has_privilege(request, slug, **assignment):
 def ensure_request_has_privilege(request, slug, **assignment):
     """
     DEPRECATED
-
-    You most likely want `has_permission` or one of the
-    `requires_privilege` decorators.
     """
+    warnings.warn(
+        '`ensure_request_has_privilege` is deprecated. You likely want '
+        '`has_permission` or one of the `requires_privilege` decorators',
+        DeprecationWarning
+    )
     if not has_privilege(request, slug, **assignment):
         raise PermissionDenied()
