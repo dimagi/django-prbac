@@ -129,7 +129,7 @@ class Role(ValidatingModel, models.Model):
         if roles is None or self.id not in roles:
             self.update_cache()
             roles = cache.get(self.ROLES_BY_ID)
-        return roles[self.id]
+        return roles.get(self.id, self)
 
     def get_privileges(self, assignment):
         if not assignment:

@@ -83,6 +83,13 @@ class TestRole(TestCase):
         self.assertFalse(subrole.instantiate({}).has_privilege(superrole1.instantiate(dict(one='baz'))))
 
 
+    def test_unsaved_role_does_not_have_permission(self):
+        role1 = Role()
+        role2 = arbitrary.role()
+        self.assertFalse(role1.has_privilege(role2))
+        self.assertFalse(role2.has_privilege(role1))
+
+
 class TestGrant(TestCase):
 
     def test_instantiated_to_role_smoke_test(self):
