@@ -8,11 +8,13 @@ from django.http import HttpRequest
 # Local imports
 from django_prbac.decorators import requires_privilege
 from django_prbac.exceptions import PermissionDenied
+from django_prbac.models import Role
 from django_prbac import arbitrary
 
 class TestDecorators(TestCase):
 
     def setUp(self):
+        Role.get_cache().clear()
         self.zazzle_privilege = arbitrary.role(slug=arbitrary.unique_slug('zazzle'), parameters=set(['domain']))
 
     def test_requires_privilege_no_current_role(self):
@@ -89,5 +91,3 @@ class TestDecorators(TestCase):
         request = HttpRequest()
         request.role = requestor_role.instantiate({})
         view(request)
-
-

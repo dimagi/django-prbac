@@ -4,7 +4,7 @@ from __future__ import unicode_literals, absolute_import, print_function
 # Local Imports
 from django.http import Http404
 from django_prbac.exceptions import PermissionDenied
-from django_prbac.utils import ensure_request_has_privilege
+from django_prbac.utils import has_privilege
 
 
 def requires_privilege(slug, **assignment):
@@ -17,7 +17,8 @@ def requires_privilege(slug, **assignment):
         (in a parameterized fashion)
         """
         def wrapped(request, *args, **kwargs):
-            ensure_request_has_privilege(request, slug, **assignment)
+            if not has_privilege(request, slug, **assignment):
+                raise PermissionDenied()
             return fn(request, *args, **kwargs)
 
         return wrapped
@@ -32,9 +33,8 @@ def requires_privilege_raise404(slug, **assignment):
     """
     def decorate(fn):
         def wrapped(request, *args, **kwargs):
-            try:
-                return requires_privilege(slug, **assignment)(fn)(request, *args, **kwargs)
-            except PermissionDenied:
+            if not has_privilege(request, slug, **assignment):
                 raise Http404()
+            return decorated(request, *args, **kwargs)
         return wrapped
     return decorate
