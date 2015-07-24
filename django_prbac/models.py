@@ -109,6 +109,11 @@ class Role(ValidatingModel, models.Model):
         `assignments` is empty.
         """
         cache = cls.get_cache()
+        if not cache.timeout:
+            roles = Role.objects.filter(slug=slug)
+            if roles:
+                return roles[0].instantiate(assignment or {})
+            return None
         privileges = cache.get(cls.PRIVILEGES_BY_SLUG)
         if privileges is None:
             cls.update_cache()
@@ -125,6 +130,8 @@ class Role(ValidatingModel, models.Model):
         Optimized lookup of role by id
         """
         cache = self.get_cache()
+        if not cache.timeout:
+            return self
         roles = cache.get(self.ROLES_BY_ID)
         if roles is None or self.id not in roles:
             self.update_cache()
