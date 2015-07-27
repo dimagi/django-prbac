@@ -109,7 +109,7 @@ class Role(ValidatingModel, models.Model):
         `assignments` is empty.
         """
         cache = cls.get_cache()
-        if not cache.timeout:
+        if cache.disabled:
             roles = Role.objects.filter(slug=slug)
             if roles:
                 return roles[0].instantiate(assignment or {})
@@ -130,7 +130,7 @@ class Role(ValidatingModel, models.Model):
         Optimized lookup of role by id
         """
         cache = self.get_cache()
-        if not cache.timeout:
+        if cache.disabled:
             return self
         roles = cache.get(self.ROLES_BY_ID)
         if roles is None or self.id not in roles:
@@ -312,6 +312,10 @@ class DictCache(object):
     def __init__(self, timeout=60):
         self.timeout = timeout
         self.data = {}
+
+    @property
+    def disabled(self):
+        return self.timeout == 0
 
     def get(self, key, default=None):
         now = time.time()
