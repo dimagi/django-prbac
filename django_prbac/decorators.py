@@ -35,6 +35,6 @@ def requires_privilege_raise404(slug, **assignment):
         def wrapped(request, *args, **kwargs):
             if not has_privilege(request, slug, **assignment):
                 raise Http404()
-            return decorated(request, *args, **kwargs)
+            return fn(request, *args, **kwargs)
         return wrapped
     return decorate
