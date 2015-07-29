@@ -56,7 +56,7 @@ class Role(ValidatingModel, models.Model):
     parameters = StringSetField(
         help_text='A set of strings which are the parameters for this role. Entered as a JSON list.',
         blank=True,
-        default=[],
+        default=list,
     )
 
 
@@ -119,7 +119,7 @@ class Grant(ValidatingModel, models.Model):
     assignment = json_field.JSONField(
         help_text='Assignment from parameters (strings) to values (any JSON-compatible value)',
         blank=True,
-        default={},
+        default=dict,
     )
 
 
