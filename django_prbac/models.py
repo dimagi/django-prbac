@@ -68,7 +68,7 @@ class Role(ValidatingModel, models.Model):
     parameters = StringSetField(
         help_text='A set of strings which are the parameters for this role. Entered as a JSON list.',
         blank=True,
-        default={},
+        default=[],
     )
 
 
