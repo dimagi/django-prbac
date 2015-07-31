@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 ('slug', models.CharField(help_text='The formal slug for this role, which should be unique', unique=True, max_length=256)),
                 ('name', models.CharField(help_text='The friendly name for this role to present to users; this need not be unique.', max_length=256)),
                 ('description', models.TextField(default='', help_text='A long-form description of the intended semantics of this role.', blank=True)),
-                ('parameters', django_prbac.fields.StringSetField(default=list, help_text='A set of strings which are the parameters for this role. Entered as a JSON list.', blank=True)),
+                ('parameters', django_prbac.fields.StringSetField(default=set, help_text='A set of strings which are the parameters for this role. Entered as a JSON list.', blank=True)),
             ],
             bases=(django_prbac.models.ValidatingModel, models.Model),
         ),
