@@ -15,6 +15,9 @@ from django_prbac import arbitrary
 
 class TestRole(TestCase):
 
+    def setUp(self):
+        Role.get_cache().clear()
+
     def test_has_permission_immediate_no_params(self):
         subrole = arbitrary.role()
         superrole1 = arbitrary.role()
@@ -80,6 +83,13 @@ class TestRole(TestCase):
         self.assertFalse(subrole.instantiate({}).has_privilege(superrole1.instantiate(dict(one='baz'))))
 
 
+    def test_unsaved_role_does_not_have_permission(self):
+        role1 = Role()
+        role2 = arbitrary.role()
+        self.assertFalse(role1.has_privilege(role2))
+        self.assertFalse(role2.has_privilege(role1))
+
+
 class TestGrant(TestCase):
 
     def test_instantiated_to_role_smoke_test(self):
@@ -101,6 +111,9 @@ class TestGrant(TestCase):
 
 class TestUserRole(TestCase):
 
+    def setUp(self):
+        Role.get_cache().clear()
+
     def test_user_role_integration(self):
         """
         Basic smoke test of integration of PRBAC with django.contrib.auth
@@ -111,7 +124,7 @@ class TestUserRole(TestCase):
         arbitrary.grant(from_role=role, to_role=priv)
         user_role = arbitrary.user_role(user=user, role=role)
 
-        self.assertEquals(user.prbac_role, user_role)
+        self.assertEqual(user.prbac_role, user_role)
         self.assertTrue(user.prbac_role.has_privilege(role))
         self.assertTrue(user.prbac_role.has_privilege(priv))
 
