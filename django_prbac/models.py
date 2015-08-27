@@ -8,7 +8,6 @@ import weakref
 # Django imports
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import User
 
 # External Library imports
 import json_field
@@ -25,7 +24,6 @@ __all__ = [
 ]
 
 class ValidatingModel(object):
-
     def save(self, force_insert=False, force_update=False, **kwargs):
         if not (force_insert or force_update):
             self.full_clean() # Will raise ValidationError if needed
@@ -67,7 +65,7 @@ class Role(ValidatingModel, models.Model):
     parameters = StringSetField(
         help_text='A set of strings which are the parameters for this role. Entered as a JSON list.',
         blank=True,
-        default=[],
+        default=set,
     )
 
 
@@ -210,7 +208,7 @@ class Grant(ValidatingModel, models.Model):
     assignment = json_field.JSONField(
         help_text='Assignment from parameters (strings) to values (any JSON-compatible value)',
         blank=True,
-        default={},
+        default=dict,
     )
 
 
@@ -243,7 +241,7 @@ class UserRole(ValidatingModel, models.Model):
     request.user.prbac_role.has_privilege(...)
     """
 
-    user = models.OneToOneField(User, related_name='prbac_role')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='prbac_role')
     role = models.OneToOneField(Role, related_name='user_role')
 
     def has_privilege(self, privilege):

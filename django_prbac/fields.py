@@ -10,15 +10,10 @@ from django.db import models
 # External libraries
 import six
 import simplejson
-from south.modelsinspector import add_introspection_rules
 
 # Local imports
 import django_prbac.csv
 from django_prbac.forms import StringListFormField
-
-# Make South understand these fields; no special treatment
-add_introspection_rules([], ["^django_prbac\.fields\.StringListField"])
-add_introspection_rules([], ["^django_prbac\.fields\.StringSetField"])
 
 class StringListField(six.with_metaclass(models.SubfieldBase, models.TextField)):
     """

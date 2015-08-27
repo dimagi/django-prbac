@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='django-prbac',
@@ -7,11 +7,11 @@ setup(
     author='Dimagi',
     author_email='information@dimagi.com',
     url='http://github.com/dimagi/django-prbac',
-    packages=['django_prbac'],
+    packages=find_packages(),
+    zip_safe=False,
     install_requires=[
-        'django<1.7',
+        'django>=1.7a,<1.9',
         'django-json-field>=0.5.5',
-        'simplejson',
-        'South',
+        'simplejson'
     ],
 )

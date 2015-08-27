@@ -26,6 +26,7 @@ class RoleAdminForm(forms.ModelForm):
         widgets = {
             'parameters': StringSetInput
         }
+        exclude = []
 
 
 class RoleAdmin(admin.ModelAdmin):
@@ -83,7 +84,7 @@ class GrantAdmin(admin.ModelAdmin):
         'to_role__description',
     ]
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return Grant.objects.select_related('to_role', 'from_role')
 
 admin.site.register(Role, RoleAdmin)
