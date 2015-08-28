@@ -68,6 +68,8 @@ class Role(ValidatingModel, models.Model):
         default=set,
     )
 
+    class Meta:
+        app_label = 'django_prbac'
 
     # Methods
     # -------
@@ -211,6 +213,8 @@ class Grant(ValidatingModel, models.Model):
         default=dict,
     )
 
+    class Meta:
+        app_label = 'django_prbac'
 
     # Methods
     # -------
@@ -243,6 +247,9 @@ class UserRole(ValidatingModel, models.Model):
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='prbac_role')
     role = models.OneToOneField(Role, related_name='user_role')
+
+    class Meta:
+        app_label = 'django_prbac'
 
     def has_privilege(self, privilege):
         return self.role.has_privilege(privilege)
