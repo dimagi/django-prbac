@@ -5,7 +5,7 @@ setup(
     version='0.0.2',
     description='Parameterized Role-Based Access Control for Django',
     author='Dimagi',
-    author_email='information@dimagi.com',
+    author_email='dev@dimagi.com',
     url='http://github.com/dimagi/django-prbac',
     packages=find_packages(),
     zip_safe=False,
