@@ -1,6 +1,8 @@
 # Use modern Python
 from __future__ import unicode_literals, absolute_import, print_function
 
+from functools import wraps
+
 # Local Imports
 from django.http import Http404
 from django_prbac.exceptions import PermissionDenied
@@ -16,6 +18,7 @@ def requires_privilege(slug, **assignment):
         with the parameters specified in `assignment`
         (in a parameterized fashion)
         """
+        @wraps(fn)
         def wrapped(request, *args, **kwargs):
             if not has_privilege(request, slug, **assignment):
                 raise PermissionDenied()
@@ -32,6 +35,7 @@ def requires_privilege_raise404(slug, **assignment):
     if PermissionDenied is raised.
     """
     def decorate(fn):
+        @wraps(fn)
         def wrapped(request, *args, **kwargs):
             if not has_privilege(request, slug, **assignment):
                 raise Http404()
