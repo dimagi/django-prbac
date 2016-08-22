@@ -12,24 +12,22 @@ def has_privilege(request, slug, **assignment):
     Returns true if the request has the privilege specified by slug,
     otherwise false
     """
-    if not hasattr(request, 'role'):
-        return False
-
     privilege = Role.get_privilege(slug, assignment)
     if privilege is None:
         return False
 
-    if request.role.has_privilege(privilege):
-        return True
+    if hasattr(request, 'role'):
+        if request.role.has_privilege(privilege):
+            return True
 
-    if not hasattr(request, 'user') or not hasattr(request.user, 'prbac_role'):
-        return False
-    try:
-        request.user.prbac_role
-    except UserRole.DoesNotExist:
-        return False
+    if hasattr(request, 'user') and hasattr(request.user, 'prbac_role'):
+        try:
+            request.user.prbac_role
+        except UserRole.DoesNotExist:
+            return False
+        return request.user.prbac_role.has_privilege(privilege)
 
-    return request.user.prbac_role.has_privilege(privilege)
+    return False
 
 
 def ensure_request_has_privilege(request, slug, **assignment):

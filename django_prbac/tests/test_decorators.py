@@ -91,3 +91,21 @@ class TestDecorators(TestCase):
         request = HttpRequest()
         request.role = requestor_role.instantiate({})
         view(request)
+
+    def test_requires_privilege_role_on_user_ok(self):
+        """
+        Verify that privilege is recognized when the request user has the prbac_role, but request.role is not set.
+        """
+
+        @requires_privilege(self.zazzle_privilege.slug, domain='zizzle')
+        def view(request, *args, **kwargs):
+            pass
+
+        user = arbitrary.user()
+        requestor_role = arbitrary.role()
+        arbitrary.grant(from_role=requestor_role, to_role=self.zazzle_privilege, assignment=dict(domain='zizzle'))
+        arbitrary.user_role(user=user, role=requestor_role)
+
+        request = HttpRequest()
+        request.user = user
+        view(request)
