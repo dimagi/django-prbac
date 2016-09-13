@@ -199,12 +199,14 @@ class Grant(ValidatingModel, models.Model):
         'Role',
         help_text='The sub-role begin granted membership or permission',
         related_name='memberships_granted',
+        on_delete=models.CASCADE,
     )
 
     to_role = models.ForeignKey(
         'Role',
         help_text='The super-role or permission being given',
         related_name='members',
+        on_delete=models.CASCADE,
     )
 
     assignment = jsonfield.JSONField(
@@ -245,8 +247,8 @@ class UserRole(ValidatingModel, models.Model):
     request.user.prbac_role.has_privilege(...)
     """
 
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='prbac_role')
-    role = models.OneToOneField(Role, related_name='user_role')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='prbac_role', on_delete=models.CASCADE)
+    role = models.OneToOneField(Role, related_name='user_role', on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'django_prbac'

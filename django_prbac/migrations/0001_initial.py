@@ -38,19 +38,19 @@ class Migration(migrations.Migration):
             name='UserRole',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('role', models.OneToOneField(related_name='user_role', to='django_prbac.Role')),
-                ('user', models.OneToOneField(related_name='prbac_role', to=settings.AUTH_USER_MODEL)),
+                ('role', models.OneToOneField(related_name='user_role', to='django_prbac.Role', on_delete=models.CASCADE)),
+                ('user', models.OneToOneField(related_name='prbac_role', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             bases=(django_prbac.models.ValidatingModel, models.Model),
         ),
         migrations.AddField(
             model_name='grant',
             name='from_role',
-            field=models.ForeignKey(related_name='memberships_granted', to='django_prbac.Role', help_text='The sub-role begin granted membership or permission'),
+            field=models.ForeignKey(related_name='memberships_granted', to='django_prbac.Role', help_text='The sub-role begin granted membership or permission', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='grant',
             name='to_role',
-            field=models.ForeignKey(related_name='members', to='django_prbac.Role', help_text='The super-role or permission being given'),
+            field=models.ForeignKey(related_name='members', to='django_prbac.Role', help_text='The super-role or permission being given', on_delete=models.CASCADE),
         ),
     ]
