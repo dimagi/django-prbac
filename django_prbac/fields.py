@@ -1,19 +1,16 @@
 # Use Modern Python
 from __future__ import unicode_literals, absolute_import, print_function
 
-# System imports
-import csv
-
 # Django imports
 from django.db import models
 
 # External libraries
 import six
-import simplejson
 
 # Local imports
 import django_prbac.csv
 from django_prbac.forms import StringListFormField
+
 
 class StringListField(models.TextField):
     """
