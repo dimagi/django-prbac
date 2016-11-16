@@ -15,7 +15,7 @@ import simplejson
 import django_prbac.csv
 from django_prbac.forms import StringListFormField
 
-class StringListField(six.with_metaclass(models.SubfieldBase, models.TextField)):
+class StringListField(models.TextField):
     """
     A Django field for lists of strings
     """
@@ -69,7 +69,7 @@ class StringListField(six.with_metaclass(models.SubfieldBase, models.TextField))
         return super(StringListField, self).formfield(**defaults)
 
 
-class StringSetField(six.with_metaclass(models.SubfieldBase, StringListField)):
+class StringSetField(StringListField):
     """
     A Django field for set of strings.
     """
