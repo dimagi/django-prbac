@@ -1,21 +1,18 @@
 # Use Modern Python
 from __future__ import unicode_literals, absolute_import, print_function
 
-# System imports
-import csv
-
 # Django imports
 from django.db import models
 
 # External libraries
 import six
-import simplejson
 
 # Local imports
 import django_prbac.csv
 from django_prbac.forms import StringListFormField
 
-class StringListField(six.with_metaclass(models.SubfieldBase, models.TextField)):
+
+class StringListField(models.TextField):
     """
     A Django field for lists of strings
     """
@@ -68,8 +65,11 @@ class StringListField(six.with_metaclass(models.SubfieldBase, models.TextField))
         defaults.update(kwargs)
         return super(StringListField, self).formfield(**defaults)
 
+    def from_db_value(self, value, expression, connection, context):
+        return self.to_python(value)
 
-class StringSetField(six.with_metaclass(models.SubfieldBase, StringListField)):
+
+class StringSetField(StringListField):
     """
     A Django field for set of strings.
     """
@@ -111,3 +111,6 @@ class StringSetField(six.with_metaclass(models.SubfieldBase, StringListField)):
             raise ValueError('Invalid value %r for StringSetField' % value)
         else:
             return super(StringSetField, self).get_prep_value(sorted(value))
+
+    def from_db_value(self, value, expression, connection, context):
+        return self.to_python(value)
