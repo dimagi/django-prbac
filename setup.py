@@ -10,7 +10,7 @@ setup(
     packages=find_packages(),
     zip_safe=False,
     install_requires=[
-        'django>=1.7a,<1.9',
+        'django>=1.10,<1.11',
         'jsonfield>=1.0.3',
         'simplejson',
         'six',
