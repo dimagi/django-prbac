@@ -4,7 +4,11 @@ from __future__ import unicode_literals, absolute_import, print_function
 # Django imports
 from django.contrib import admin
 from django import forms
-from django.urls import reverse
+try:
+    from django.urls import reverse
+except ImportError:
+    # remove when supported django>=1.10
+    from django.core.urlresolvers import reverse
 
 # External librariess
 import simplejson
