@@ -97,7 +97,7 @@ class StringSetField(StringListField):
         # First let StringListField do whatever it needs to do; this will now be a string list
         try:
             value = super(StringSetField, self).to_python(value)
-        except ValueError as exc:
+        except ValueError:
             raise ValueError('Invalid value for StringSetField: %r' % value)
 
         return set(value)
