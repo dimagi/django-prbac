@@ -4,7 +4,11 @@ from __future__ import unicode_literals, absolute_import, print_function
 # Django imports
 from django.contrib import admin
 from django import forms
-from django.core import urlresolvers
+try:
+    from django.urls import reverse
+except ImportError:
+    # remove when supported django>=1.10
+    from django.core.urlresolvers import reverse
 
 # External librariess
 import simplejson
@@ -59,7 +63,7 @@ class GrantAdmin(admin.ModelAdmin):
 
     def edit_link(self, instance):
         if instance.id:
-            return '<a href="%s">(edit)</a>' % urlresolvers.reverse('admin:django_prbac_grant_change',
+            return '<a href="%s">(edit)</a>' % reverse('admin:django_prbac_grant_change',
                                                                          args=[instance.id])
         else:
             return ''

@@ -31,11 +31,7 @@ class StringListField(models.TextField):
         # Already the appropriate python type
         if self.is_string_list(value):
             return value
-
-        # First let TextField do whatever it needs to do
-        value = super(StringListField, self).to_python(value)
-
-        if isinstance(value, six.string_types):
+        elif isinstance(value, six.string_types):
             return django_prbac.csv.parse_line(value)
         else:
             raise ValueError('Invalid value for StringListField: %r is neither the correct type nor deserializable' % value)
@@ -97,7 +93,7 @@ class StringSetField(StringListField):
         # First let StringListField do whatever it needs to do; this will now be a string list
         try:
             value = super(StringSetField, self).to_python(value)
-        except ValueError as exc:
+        except ValueError:
             raise ValueError('Invalid value for StringSetField: %r' % value)
 
         return set(value)
