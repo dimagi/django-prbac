@@ -40,6 +40,9 @@ class TestStringListField(TestCase):
         with self.assertRaises(ValueError):
             field.to_python([1, 2, 3])
 
+        with self.assertRaises(ValueError):
+            field.to_python(None)
+
 
     def test_get_prep_value_convert(self):
         field = StringListField('testing')
@@ -85,6 +88,9 @@ class TestStringSetField(TestCase):
 
         with self.assertRaises(ValueError):
             field.to_python([1, 2, 3])
+
+        with self.assertRaises(ValueError):
+            field.to_python(None)
 
 
     def test_get_prep_value_convert(self):
