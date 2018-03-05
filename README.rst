@@ -78,7 +78,7 @@ Django-prbac is distributed under the MIT license. (See the LICENSE file for det
    :target: https://travis-ci.org/dimagi/django-prbac
 .. |Test coverage| image:: https://coveralls.io/repos/dimagi/django-prbac/badge.png?branch=master
    :target: https://coveralls.io/r/dimagi/django-prbac
-.. |PyPi version| image:: https://pypip.in/v/django-prbac/badge.png
+.. |PyPi version| image:: https://img.shields.io/pypi/v/django-prbac.svg
    :target: https://pypi.python.org/pypi/django-prbac
-.. |PyPi downloads| image:: https://pypip.in/d/django-prbac/badge.png
+.. |PyPi downloads| image:: https://img.shields.io/pypi/dm/django-prbac.svg
    :target: https://pypi.python.org/pypi/django-prbac
