@@ -14,7 +14,7 @@ install:
  - "pip install -e ."
  - "pip install coverage coveralls"
 script:
- - "coverage run `which django-admin.py` test django_prbac --settings django_prbac.mock_settings --traceback"
+ - "coverage run --source='django_prbac' `which django-admin.py` test django_prbac --settings django_prbac.mock_settings --traceback"
 after_success:
  - coverage report
  - coveralls

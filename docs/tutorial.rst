@@ -25,7 +25,8 @@ you may give each user a corresponding |Role|::
     >>> for user in User.objects.all():
             Role.objects.create(
                 name=user.username,
-                friendly_name='Role for django user: %s' % user.username
+                slug=user.username,
+                description='Role for django user: %s' % user.username
             )
 
 This is very easy to automate with triggers or via the `UserProfile` feature of Django.
@@ -38,7 +39,7 @@ A privilege is an actual thing that a user may do in the system. It is up to you
 to decide what these are and give them meaningful names and descriptions.
 For example, perhaps there is a granular permission of "may view reports"::
 
-    >>> may_view_reports = Role.create(name='may_view_reports', friendly_name='May view reports')
+    >>> may_view_reports = Role.objects.create(name='may_view_reports', slug='may_view_reports', description='May view reports')
 
     >>> biyeun = Role.objects.get(name='biyeun')
     >>> kenn = Role.objects.get(name='kenn')
@@ -54,15 +55,15 @@ For example, perhaps there is a granular permission of "may view reports"::
 All of this is normal for RBAC (without parameterization) but with PRBAC we can make this
 privilege more granular::
 
-    >>> may_view_report = Role.objects.create(name='may_view_report', parameters='report_name')
+    >>> may_view_report = Role.objects.create(name='may_view_report', slug='may_view_report', parameters=set(['report_name']))
 
     >>> Grant.objects.create(from_role=biyeun, to_role=may_view_report, assignment={'report_name': 'active_users'})
     >>> Grant.objects.create(from_role=kenn, to_role=may_view_report, assignment={'report_name': 'submissions'})
 
-    >>> biyeun.has_privilege(may_view_report.instantiate({'report_name': 'active_users'})
+    >>> biyeun.has_privilege(may_view_report.instantiate({'report_name': 'active_users'}))
     True
 
-    >>> biyeun.has_privilege(may_view_report.instantiate({'report_name': 'submissions'})
+    >>> biyeun.has_privilege(may_view_report.instantiate({'report_name': 'submissions'}))
     False
 
     >>> kenn.has_privilege(may_view_report.instantiate({'report_name': 'active_users'}))
@@ -77,7 +78,7 @@ Groups
 
 A group of users may be represented as a |Role| as well::
 
-    >>> dimagineers = Role.objects.create(name='dimagineers', friendly_name='Dimagi Engineers')
+    >>> dimagineers = Role.objects.create(name='dimagineers', slug='dimagineers', description='Dimagi Engineers')
 
     >>> Grant.objects.create(from_role=kenn, to_role=dimagineers)
     >>> Grant.objects.create(from_role=biyeun, to_role=dimagineers)
@@ -94,13 +95,15 @@ of parameterized privileges to a group of people.
 
     >>> may_edit_report = Role.objects.create(
             name='may_edit_report',
-            friendly_name='May edit report',
+            description='May edit report',
+            slug='may_edit_report',
             parameters=set(['report_name']),
         )
 
     >>> report_superusers = Role.objects.create(
             name='report_superusers',
-            friendly_name='Report Superusers',
+            description='Report Superusers',
+            slug='report_superusers',
             parameters=set(['report_name']),
         )
 
