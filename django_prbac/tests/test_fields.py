@@ -7,6 +7,7 @@ from django.test import TestCase
 # Local imports
 from django_prbac.fields import StringListField, StringSetField
 
+
 class TestStringListField(TestCase):
     """
     Test suite for django_prbac.fields.StringListField
@@ -22,17 +23,15 @@ class TestStringListField(TestCase):
         self.assertFalse(field.is_string_list(3))
         self.assertFalse(field.is_string_list('"A","B"'))
 
-
     def test_to_python_convert(self):
         field = StringListField('testing')
         self.assertEqual(field.to_python(''), [])
         self.assertEqual(field.to_python('"A","B","C"'), ['A', 'B', 'C'])
 
-
     def test_to_python_already_done(self):
         field = StringListField('testing')
         self.assertEqual(field.to_python([]), [])
-        self.assertEqual(field.to_python(["A","B","C"]), ['A', 'B', 'C'])
+        self.assertEqual(field.to_python(["A", "B", "C"]), ['A', 'B', 'C'])
 
         with self.assertRaises(ValueError):
             field.to_python(4)
@@ -42,7 +41,6 @@ class TestStringListField(TestCase):
 
         with self.assertRaises(ValueError):
             field.to_python(None)
-
 
     def test_get_prep_value_convert(self):
         field = StringListField('testing')
@@ -77,7 +75,6 @@ class TestStringSetField(TestCase):
         self.assertEqual(field.to_python(''), set())
         self.assertEqual(field.to_python('"A","B","C"'), set(['A', 'B', 'C']))
 
-
     def test_to_python_already_done(self):
         field = StringSetField('testing')
         self.assertEqual(field.to_python([]), set())
@@ -92,7 +89,6 @@ class TestStringSetField(TestCase):
         with self.assertRaises(ValueError):
             field.to_python(None)
 
-
     def test_get_prep_value_convert(self):
         field = StringSetField('testing')
 
@@ -101,5 +97,3 @@ class TestStringSetField(TestCase):
 
         with self.assertRaises(ValueError):
             field.get_prep_value(5)
-
-

@@ -11,6 +11,7 @@ from django_prbac.exceptions import PermissionDenied
 from django_prbac.models import Role
 from django_prbac import arbitrary
 
+
 class TestDecorators(TestCase):
 
     def setUp(self):
@@ -39,7 +40,6 @@ class TestDecorators(TestCase):
         def view(request, *args, **kwargs):
             pass
 
-
         requestor_role = arbitrary.role()
         request = HttpRequest()
         request.role = requestor_role
@@ -63,7 +63,6 @@ class TestDecorators(TestCase):
         request.role = requestor_role.instantiate({})
         with self.assertRaises(PermissionDenied):
             view(request)
-
 
     def test_requires_privilege_wrong_param(self):
 

@@ -15,7 +15,6 @@ import django_prbac.csv
 
 class StringListInput(TextInput):
     def render(self, name, value, attrs=None):
-        print('poops', name, value)
         if isinstance(value, six.string_types):
             return super(StringListInput, self).render(name, value)
         else:
@@ -25,7 +24,6 @@ class StringListInput(TextInput):
 
 class StringSetInput(TextInput):
     def render(self, name, value, attrs=None):
-        print('poops', name, value)
         if isinstance(value, six.string_types):
             return super(StringSetInput, self).render(name, value)
         else:

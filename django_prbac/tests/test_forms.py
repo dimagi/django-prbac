@@ -7,6 +7,7 @@ from django.test import TestCase
 # Local imports
 from django_prbac.forms import StringListFormField
 
+
 class TestStringListFormField(TestCase):
     """
     Test suite for django_prbac.fields.StringListField

@@ -13,7 +13,7 @@ from django.conf import settings
 import jsonfield
 
 # Local imports
-from django_prbac.fields import StringListField, StringSetField
+from django_prbac.fields import StringSetField
 
 
 __all__ = [
@@ -23,10 +23,11 @@ __all__ = [
     'UserRole',
 ]
 
+
 class ValidatingModel(object):
     def save(self, force_insert=False, force_update=False, **kwargs):
         if not (force_insert or force_update):
-            self.full_clean() # Will raise ValidationError if needed
+            self.full_clean()   # Will raise ValidationError if needed
         super(ValidatingModel, self).save(force_insert, force_update, **kwargs)
 
 
@@ -40,7 +41,6 @@ class Role(ValidatingModel, models.Model):
     PRIVILEGES_BY_SLUG = "DJANGO_PRBAC_PRIVELEGES"
     ROLES_BY_ID = "DJANGO_PRBAC_ROLES"
     _default_instance = lambda s:None
-
 
     # Databaes fields
     # ---------------
@@ -190,7 +190,6 @@ class Grant(ValidatingModel, models.Model):
     A parameterized membership between a sub-role and super-role.
     The parameters applied to the super-role are all those.
     """
-
 
     # Database Fields
     # ---------------
