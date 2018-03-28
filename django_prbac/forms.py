@@ -15,7 +15,6 @@ import django_prbac.csv
 
 class StringListInput(TextInput):
     def render(self, name, value, attrs=None):
-        print('poops', name, value)
         if isinstance(value, six.string_types):
             return super(StringListInput, self).render(name, value)
         else:
@@ -25,11 +24,12 @@ class StringListInput(TextInput):
 
 class StringSetInput(TextInput):
     def render(self, name, value, attrs=None):
-        print('poops', name, value)
         if isinstance(value, six.string_types):
             return super(StringSetInput, self).render(name, value)
         else:
-            rendered_value = django_prbac.csv.line_to_string(sorted(list(value)))
+            rendered_value = django_prbac.csv.line_to_string(
+                sorted(list(value))
+            )
             return super(StringSetInput, self).render(name, rendered_value)
 
 
@@ -45,14 +45,18 @@ class StringListFormField(CharField):
         super(StringListFormField, self).__init__(*args, **defaults)
 
     def is_string_list(self, value):
-        return isinstance(value, list) and all([isinstance(v, six.string_types) for v in value])
+        return isinstance(value, list) and all(
+            [isinstance(v, six.string_types) for v in value]
+        )
 
     def clean(self, value):
         if self.is_string_list(value):
             return value
 
         elif not isinstance(value, six.string_types):
-            raise ValidationError('%r cannot be converted to a string list' % value)
+            raise ValidationError(
+                '%r cannot be converted to a string list' % value
+            )
 
         else:
             try:
@@ -63,5 +67,6 @@ class StringListFormField(CharField):
                 )
 
             except ValueError:
-                raise ValidationError('%r cannot be converted to a string list' % value)
-
+                raise ValidationError(
+                    '%r cannot be converted to a string list' % value
+                )

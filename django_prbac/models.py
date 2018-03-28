@@ -13,7 +13,7 @@ from django.conf import settings
 import jsonfield
 
 # Local imports
-from django_prbac.fields import StringListField, StringSetField
+from django_prbac.fields import StringSetField
 
 
 __all__ = [
@@ -23,10 +23,11 @@ __all__ = [
     'UserRole',
 ]
 
+
 class ValidatingModel(object):
     def save(self, force_insert=False, force_update=False, **kwargs):
         if not (force_insert or force_update):
-            self.full_clean() # Will raise ValidationError if needed
+            self.full_clean()   # Will raise ValidationError if needed
         super(ValidatingModel, self).save(force_insert, force_update, **kwargs)
 
 
@@ -40,10 +41,6 @@ class Role(ValidatingModel, models.Model):
     PRIVILEGES_BY_SLUG = "DJANGO_PRBAC_PRIVELEGES"
     ROLES_BY_ID = "DJANGO_PRBAC_ROLES"
     _default_instance = lambda s:None
-
-
-    # Databaes fields
-    # ---------------
 
     slug = models.CharField(
         max_length=256,
@@ -98,7 +95,8 @@ class Role(ValidatingModel, models.Model):
         cache = cls.get_cache()
         cache.set(cls.ROLES_BY_ID, roles)
         cache.set(cls.PRIVILEGES_BY_SLUG,
-            {role.slug: role.instantiate({}) for role in roles.values()})
+                  {role.slug: role.instantiate({})
+                   for role in roles.values()})
 
     @classmethod
     def get_privilege(cls, slug, assignment=None):
@@ -152,8 +150,11 @@ class Role(ValidatingModel, models.Model):
         An instantiation of this role with some parameters fixed via the provided assignments.
         """
         if assignment:
-            filtered_assignment = {key: assignment[key]
-                for key in self.parameters & set(assignment.keys())}
+            filtered_assignment = {
+                key: assignment[key] for key in self.parameters & set(
+                    assignment.keys()
+                )
+            }
         else:
             value = self._default_instance()
             if value is not None:
@@ -190,7 +191,6 @@ class Grant(ValidatingModel, models.Model):
     A parameterized membership between a sub-role and super-role.
     The parameters applied to the super-role are all those.
     """
-
 
     # Database Fields
     # ---------------
@@ -235,7 +235,8 @@ class Grant(ValidatingModel, models.Model):
         return self.to_role.instantiate(composed_assignment)
 
     def __repr__(self):
-        return 'Grant(from_role=%r, to_role=%r, assignment=%r)' % (self.from_role, self.to_role, self.assignment)
+        return 'Grant(from_role=%r, to_role=%r, assignment=%r)' % (
+            self.from_role, self.to_role, self.assignment)
 
 
 class UserRole(ValidatingModel, models.Model):
@@ -247,8 +248,16 @@ class UserRole(ValidatingModel, models.Model):
     request.user.prbac_role.has_privilege(...)
     """
 
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='prbac_role', on_delete=models.CASCADE)
-    role = models.OneToOneField(Role, related_name='user_role', on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        related_name='prbac_role',
+        on_delete=models.CASCADE
+    )
+    role = models.OneToOneField(
+        Role,
+        related_name='user_role',
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         app_label = 'django_prbac'
@@ -307,7 +316,8 @@ class RoleInstance(object):
         return self.slug == other.slug and self.assignment == other.assignment
 
     def __repr__(self):
-        return 'RoleInstance(%r, parameters=%r, assignment=%r)' % (self.slug, self.parameters, self.assignment)
+        return 'RoleInstance(%r, parameters=%r, assignment=%r)' % (
+            self.slug, self.parameters, self.assignment)
 
 
 class DictCache(object):
