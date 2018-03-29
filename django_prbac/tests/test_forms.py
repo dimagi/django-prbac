@@ -7,6 +7,7 @@ from django.test import TestCase
 # Local imports
 from django_prbac.forms import StringListFormField
 
+
 class TestStringListFormField(TestCase):
     """
     Test suite for django_prbac.fields.StringListField
@@ -17,16 +18,28 @@ class TestStringListFormField(TestCase):
 
         self.assertEqual(field.clean('hello, goodbye'), ['hello', ' goodbye'])
         self.assertEqual(field.clean('hello,goodbye'), ['hello', 'goodbye'])
-        self.assertEqual(field.clean('"hello",    goodbye'), ['hello', '    goodbye'])
-        self.assertEqual(field.clean('"hello"," oh no "'), ['hello', ' oh no '])
-        self.assertEqual(field.clean('"hello","one,two"'), ['hello', 'one,two'])
+        self.assertEqual(
+            field.clean('"hello",    goodbye'), ['hello', '    goodbye']
+        )
+        self.assertEqual(
+            field.clean('"hello"," oh no "'), ['hello', ' oh no ']
+        )
+        self.assertEqual(
+            field.clean('"hello","one,two"'), ['hello', 'one,two']
+        )
 
     def test_quotechar(self):
         field = StringListFormField(required=False, quotechar='|')
 
         self.assertEqual(field.clean('hello, goodbye'), ['hello', 'goodbye'])
         self.assertEqual(field.clean('hello,goodbye'), ['hello', 'goodbye'])
-        self.assertEqual(field.clean('hello,    goodbye'), ['hello', 'goodbye'])
-        self.assertEqual(field.clean('"hello",    goodbye'), ['"hello"', 'goodbye'])
-        self.assertEqual(field.clean('"hello","oh, no"'), ['"hello"', '"oh', 'no"'])
+        self.assertEqual(
+            field.clean('hello,    goodbye'), ['hello', 'goodbye']
+        )
+        self.assertEqual(
+            field.clean('"hello",    goodbye'), ['"hello"', 'goodbye']
+        )
+        self.assertEqual(
+            field.clean('"hello","oh, no"'), ['"hello"', '"oh', 'no"']
+        )
         self.assertEqual(field.clean('hello,|oh, no|'), ['hello', 'oh, no'])

@@ -2,13 +2,8 @@
 from __future__ import unicode_literals, absolute_import, print_function
 
 # Django imports
-from django.contrib import admin
 from django import forms
-try:
-    from django.urls import reverse
-except ImportError:
-    # remove when supported django>=1.10
-    from django.core.urlresolvers import reverse
+from django.contrib import admin
 
 # External librariess
 import simplejson
@@ -23,6 +18,7 @@ __all__ = [
     'RoleAdminForm',
     'GrantAdmin',
 ]
+
 
 class RoleAdminForm(forms.ModelForm):
     class Meta:
@@ -39,7 +35,9 @@ class RoleAdmin(admin.ModelAdmin):
     form = RoleAdminForm
 
     def parameters__csv(self, instance):
-        return django_prbac.csv.line_to_string(sorted(list(instance.parameters)))
+        return django_prbac.csv.line_to_string(
+            sorted(list(instance.parameters))
+        )
     parameters__csv.short_description = 'Parameters'
     parameters__csv.admin_order_field = 'parameters'
 
@@ -57,25 +55,16 @@ class RoleAdmin(admin.ModelAdmin):
         'description',
     ]
 
+
 class GrantAdmin(admin.ModelAdmin):
 
     model = Grant
-
-    def edit_link(self, instance):
-        if instance.id:
-            return '<a href="%s">(edit)</a>' % reverse('admin:django_prbac_grant_change',
-                                                                         args=[instance.id])
-        else:
-            return ''
-    edit_link.allow_tags = True
-    edit_link.short_description = ''
 
     def assignment__dumps(self, instance):
         return simplejson.dumps(instance.assignment)
     assignment__dumps.short_description = 'Assignment'
 
     list_display = [
-        'edit_link',
         'from_role',
         'to_role',
         'assignment__dumps',
@@ -91,6 +80,6 @@ class GrantAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return Grant.objects.select_related('to_role', 'from_role')
 
+
 admin.site.register(Role, RoleAdmin)
 admin.site.register(Grant, GrantAdmin)
-

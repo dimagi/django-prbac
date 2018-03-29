@@ -3,9 +3,9 @@ Settings just for running the django-prbac tests or checking out
 the admin site.
 """
 
-SECRET_KEY='Not a secret key at all, actually'
+SECRET_KEY = 'Not a secret key at all, actually'
 
-DEBUG=True
+DEBUG = True
 
 DATABASES = {
     'default': {
@@ -26,6 +26,6 @@ INSTALLED_APPS = [
     'django_prbac',
 ]
 
-STATIC_URL='/static/'
+STATIC_URL = '/static/'
 
-ROOT_URLCONF='django_prbac.urls'
+ROOT_URLCONF = 'django_prbac.urls'

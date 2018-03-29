@@ -18,7 +18,9 @@ class StringListField(models.TextField):
     """
 
     def is_string_list(self, value):
-        return isinstance(value, list) and all([isinstance(v, six.string_types) for v in value])
+        return isinstance(value, list) and all(
+            [isinstance(v, six.string_types) for v in value]
+        )
 
     def to_python(self, value):
         """
@@ -73,7 +75,9 @@ class StringSetField(StringListField):
     # TODO thought: If Python had polymorphism this ought be "Serialize a => Field (List a)"
 
     def is_string_set(self, value):
-        return isinstance(value, set) and all([isinstance(v, six.string_types) for v in value])
+        return isinstance(value, set) and all(
+            [isinstance(v, six.string_types) for v in value]
+        )
 
     def to_python(self, value):
         """
