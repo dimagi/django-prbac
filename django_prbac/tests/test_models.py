@@ -4,7 +4,7 @@ from __future__ import unicode_literals, absolute_import, print_function
 # Standard Library Imports
 
 # Django imports
-from django.test import TestCase # https://code.djangoproject.com/ticket/20913
+from django.test import TestCase  # https://code.djangoproject.com/ticket/20913
 
 # External Library imports
 
@@ -35,7 +35,6 @@ class TestRole(TestCase):
         self.assertFalse(subrole.instantiate({}).has_privilege(superrole2))
         self.assertFalse(subrole.has_privilege(superrole2))
 
-
     def test_has_permission_transitive_no_params(self):
         subrole = arbitrary.role()
         midrole = arbitrary.role()
@@ -54,7 +53,6 @@ class TestRole(TestCase):
         self.assertFalse(subrole.has_privilege(superrole2.instantiate({})))
         self.assertFalse(subrole.instantiate({}).has_privilege(superrole2))
         self.assertFalse(subrole.has_privilege(superrole2))
-
 
     def test_has_permission_far_transitive_no_params(self):
         subrole = arbitrary.role()
@@ -127,4 +125,3 @@ class TestUserRole(TestCase):
         self.assertEqual(user.prbac_role, user_role)
         self.assertTrue(user.prbac_role.has_privilege(role))
         self.assertTrue(user.prbac_role.has_privilege(priv))
-

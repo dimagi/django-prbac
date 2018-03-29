@@ -7,6 +7,7 @@ import csv
 # External libraries
 import six
 
+
 def parse_line(value, quotechar=None, **kwargs):
     """
     A simple wrapper to parse a single CSV value
@@ -19,7 +20,7 @@ def parse_line(value, quotechar=None, **kwargs):
 
     for row in csv.reader([value], quotechar=quotechar, **kwargs):
         if six.PY3:
-            return row # Already unicode in Python 3, hooray!
+            return row  # Already unicode in Python 3, hooray!
         else:
             return [s.decode('utf-8') for s in row] # Always binary in Python 2, fooey!
 

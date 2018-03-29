@@ -2,8 +2,8 @@
 from __future__ import unicode_literals, absolute_import, print_function
 
 # Standard Library Imports
-from random import choice
 import uuid
+from random import choice
 
 # Django imports
 from django.contrib.auth.models import User
@@ -17,6 +17,7 @@ __all__ = [
     'unique_name',
 ]
 
+
 def instantiate(generator_or_value):
     """
     Dynamic typing hack to try to call generators if provided,
@@ -28,6 +29,7 @@ def instantiate(generator_or_value):
         return generator_or_value()
     else:
         return generator_or_value
+
 
 def arbitrary_slug():
     return choice(['foo', 'bar', 'baz', 'zizzle', 'zazzle'])
@@ -86,6 +88,7 @@ def arbitrary_grant(from_role=None, to_role=None, save=True, **kwargs):
 
     return grant
 
+
 def arbitrary_user_role(user=None, role=None, save=True, **kwargs):
     user = instantiate(user or arbitrary_user)
     role = instantiate(role or arbitrary_role)
@@ -98,6 +101,7 @@ def arbitrary_user_role(user=None, role=None, save=True, **kwargs):
         user_role.save()
 
     return user_role
+
 
 role = arbitrary_role
 grant = arbitrary_grant
