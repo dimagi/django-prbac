@@ -49,7 +49,7 @@ class StringListField(models.TextField):
             return django_prbac.csv.line_to_string(value, lineterminator='')
 
     def value_to_string(self, obj):
-        value = self._get_val_from_obj(obj)
+        value = self.value_from_object(obj)
         return self.get_prep_value(value)
 
     def formfield(self, **kwargs):
@@ -99,7 +99,7 @@ class StringSetField(StringListField):
         return set(value)
 
     def value_to_string(self, obj):
-        value = self._get_val_from_obj(obj)
+        value = self.value_from_object(obj)
         return self.get_prep_value(value)
 
     def get_prep_value(self, value):
