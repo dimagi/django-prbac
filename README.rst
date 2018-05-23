@@ -5,7 +5,7 @@ Django PRBAC
 
 https://github.com/dimagi/django-prbac
 
-|Build Status| |Test coverage| |PyPi version| |PyPi downloads|
+|Build Status| |Test coverage| |PyPi version|
 
 About RBAC and PRBAC
 --------------------
