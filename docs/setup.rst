@@ -17,12 +17,7 @@ Then add `django_prbac` to the `INSTALLED_APPS` in your settings module
         'django_prbac',
     ]
 
-Finally, set up the database tables via `syncdb`::
-
-    $ python manage.py syncdb
-
-If you are using South, then this will not actually do anything, but will prompt you to run
-the migrations::
+Set up the database by running the migrations::
 
     $ python manage.py migrate django_prbac
 
