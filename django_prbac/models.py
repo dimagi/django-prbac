@@ -48,7 +48,7 @@ class Role(ValidatingModel, models.Model):
     # ---------------
 
     slug = models.CharField(
-        max_length=256,
+        max_length=255,
         help_text='The formal slug for this role, which should be unique',
         unique=True,
     )
