@@ -11,6 +11,8 @@ from django.test import TestCase  # https://code.djangoproject.com/ticket/20913
 # Local imports
 from django_prbac.models import *
 from django_prbac import arbitrary
+from six.moves import range
+from six.moves import zip
 
 
 class TestRole(TestCase):
