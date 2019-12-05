@@ -32,6 +32,8 @@ setup(
     packages=find_packages(),
     zip_safe=False,
     install_requires=[
+        # avoid django>=2.1.0,<2.1.5 due to CVE-2019-19118
+        # https://github.com/advisories/GHSA-hvmf-r92r-27hr
         'django>=1.8,<2.1',
         'jsonfield>=1.0.3',
         'simplejson',
