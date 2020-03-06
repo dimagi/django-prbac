@@ -15,3 +15,8 @@ script:
 after_success:
  - coverage report
  - coveralls
+
+matrix:
+  exclude:
+  - python: "3.4"
+    env: DJANGO_VERSION_MIN=2.2 DJANGO_VERSION_MAX=2.3
