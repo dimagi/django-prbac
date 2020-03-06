@@ -32,9 +32,9 @@ setup(
     packages=find_packages(),
     zip_safe=False,
     install_requires=[
-        # avoid django>=2.1.0,<2.1.15,>=2.2.0,<2.2.8 due to CVE-2019-19118
-        # https://github.com/advisories/GHSA-hvmf-r92r-27hr
-        'django>=1.8,<2.1',
+        # avoid django 1 <1.11.28 and django 2 <2.2.10
+        # https://github.com/advisories/GHSA-hmr4-m2h5-33qx
+        'django>=1.11.28,!=2.0.*,!=2.1.*,!=2.2.0,!=2.2.1,!=2.2.2,!=2.2.3,!=2.2.4,!=2.2.5,!=2.2.6,!=2.2.7,!=2.2.8,!=2.2.9,<3',
         'jsonfield>=1.0.3',
         'simplejson',
         'six',
