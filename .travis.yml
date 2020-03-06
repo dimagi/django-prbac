@@ -1,15 +1,11 @@
 language: python
 python:
- - "2.7"
  - "3.4"
  - "3.5"
  - "3.6"
 env:
- - DJANGO_VERSION_MIN=1.8 DJANGO_VERSION_MAX=1.9
- - DJANGO_VERSION_MIN=1.9 DJANGO_VERSION_MAX=1.10
- - DJANGO_VERSION_MIN=1.10 DJANGO_VERSION_MAX=1.11
  - DJANGO_VERSION_MIN=1.11 DJANGO_VERSION_MAX=2.0
- - DJANGO_VERSION_MIN=2.0 DJANGO_VERSION_MAX=2.1
+ - DJANGO_VERSION_MIN=2.2 DJANGO_VERSION_MAX=2.3
 install:
  - pip install "django>=$DJANGO_VERSION_MIN,<$DJANGO_VERSION_MAX"
  - "pip install -e ."
@@ -22,5 +18,5 @@ after_success:
 
 matrix:
   exclude:
-  - python: "2.7"
-    env: DJANGO_VERSION_MIN=2.0 DJANGO_VERSION_MAX=2.1
+  - python: "3.4"
+    env: DJANGO_VERSION_MIN=2.2 DJANGO_VERSION_MAX=2.3
