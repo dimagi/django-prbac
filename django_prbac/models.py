@@ -6,9 +6,15 @@ import time
 import weakref
 
 # Django imports
+from django import VERSION
 from django.db import models
 from django.conf import settings
-from django.utils.encoding import python_2_unicode_compatible
+if VERSION[0] < 3:
+    from django.utils.encoding import python_2_unicode_compatible
+else:
+    def python_2_unicode_compatible(fn):
+        return fn
+
 
 # External Library imports
 import jsonfield

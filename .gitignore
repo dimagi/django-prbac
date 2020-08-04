@@ -2,6 +2,9 @@
 *~
 \#*
 .\#*
+.history
+.mypy_cache
+.vscode
 
 # README.txt is just for the Cheeseshop; README.md is the authoritative one
 /README.txt
