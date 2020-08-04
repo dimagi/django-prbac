@@ -61,7 +61,7 @@ class StringListField(models.TextField):
         defaults.update(kwargs)
         return super(StringListField, self).formfield(**defaults)
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection, *args, **kwargs):
         return self.to_python(value)
 
 
@@ -108,5 +108,5 @@ class StringSetField(StringListField):
         else:
             return super(StringSetField, self).get_prep_value(sorted(value))
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection, *args, **kwargs):
         return self.to_python(value)

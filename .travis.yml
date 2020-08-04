@@ -3,9 +3,12 @@ python:
  - "3.4"
  - "3.5"
  - "3.6"
+ - "3.7"
+ - "3.8"
 env:
  - DJANGO_VERSION_MIN=1.11 DJANGO_VERSION_MAX=2.0
- - DJANGO_VERSION_MIN=2.2 DJANGO_VERSION_MAX=2.3
+ - DJANGO_VERSION_MIN=2.2 DJANGO_VERSION_MAX=3.0
+ - DJANGO_VERSION_MIN=3.0.3 DJANGO_VERSION_MAX=4.0
 install:
  - pip install "django>=$DJANGO_VERSION_MIN,<$DJANGO_VERSION_MAX"
  - "pip install -e ."
@@ -19,4 +22,8 @@ after_success:
 matrix:
   exclude:
   - python: "3.4"
-    env: DJANGO_VERSION_MIN=2.2 DJANGO_VERSION_MAX=2.3
+    env: DJANGO_VERSION_MIN=2.2 DJANGO_VERSION_MAX=3.0
+  - python: "3.4"
+    env: DJANGO_VERSION_MIN=3.0.3 DJANGO_VERSION_MAX=4.0
+  - python: "3.5"
+    env: DJANGO_VERSION_MIN=3.0.3 DJANGO_VERSION_MAX=4.0
