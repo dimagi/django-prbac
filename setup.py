@@ -35,7 +35,6 @@ setup(
         'django>=2.2.10,!=3.0.0,!=3.0.1,!=3.0.2,<4',
         'jsonfield>=1.0.3,<3',
         'simplejson',
-        'six',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',

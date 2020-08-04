@@ -1,6 +1,5 @@
 from django.db import models
 
-import six
 import django_prbac.csv
 from django_prbac.forms import StringListFormField
 
@@ -11,7 +10,7 @@ class StringListField(models.TextField):
     """
 
     def is_string_list(self, value):
-        return isinstance(value, list) and all([isinstance(v, six.string_types) for v in value])
+        return isinstance(value, list) and all([isinstance(v, str) for v in value])
 
     def to_python(self, value):
         """
@@ -24,7 +23,7 @@ class StringListField(models.TextField):
         # Already the appropriate python type
         if self.is_string_list(value):
             return value
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             return django_prbac.csv.parse_line(value)
         else:
             raise ValueError('Invalid value for StringListField: %r is neither the correct type nor deserializable' % value)
@@ -66,7 +65,7 @@ class StringSetField(StringListField):
     # TODO thought: If Python had polymorphism this ought be "Serialize a => Field (List a)"
 
     def is_string_set(self, value):
-        return isinstance(value, set) and all([isinstance(v, six.string_types) for v in value])
+        return isinstance(value, set) and all([isinstance(v, str) for v in value])
 
     def to_python(self, value):
         """

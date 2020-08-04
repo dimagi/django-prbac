@@ -1,13 +1,11 @@
 from django.forms import ValidationError, CharField, TextInput
 
-import six
-
 import django_prbac.csv
 
 
 class StringListInput(TextInput):
     def render(self, name, value, attrs=None):
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             return super(StringListInput, self).render(name, value)
         else:
             rendered_value = django_prbac.csv.line_to_string(list(value))
@@ -16,7 +14,7 @@ class StringListInput(TextInput):
 
 class StringSetInput(TextInput):
     def render(self, name, value, attrs=None):
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             return super(StringSetInput, self).render(name, value)
         else:
             rendered_value = django_prbac.csv.line_to_string(sorted(list(value)))
@@ -35,13 +33,13 @@ class StringListFormField(CharField):
         super(StringListFormField, self).__init__(*args, **defaults)
 
     def is_string_list(self, value):
-        return isinstance(value, list) and all([isinstance(v, six.string_types) for v in value])
+        return isinstance(value, list) and all([isinstance(v, str) for v in value])
 
     def clean(self, value):
         if self.is_string_list(value):
             return value
 
-        elif not isinstance(value, six.string_types):
+        elif not isinstance(value, str):
             raise ValidationError('%r cannot be converted to a string list' % value)
 
         else:
