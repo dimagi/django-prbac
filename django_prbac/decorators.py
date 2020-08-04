@@ -1,9 +1,5 @@
-# Use modern Python
-from __future__ import unicode_literals, absolute_import, print_function
-
 from functools import wraps
 
-# Local Imports
 from django.http import Http404
 from django_prbac.exceptions import PermissionDenied
 from django_prbac.utils import has_privilege

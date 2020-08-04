@@ -1,9 +1,3 @@
-# Use modern Python
-from __future__ import unicode_literals, absolute_import, print_function
-
-# Standard Library Imports
-
-# Django imports
 from django.test import TestCase  # https://code.djangoproject.com/ticket/20913
 
 from django_prbac.models import Role

@@ -3,7 +3,6 @@ Settings just for running the django-prbac tests or checking out
 the admin site.
 """
 
-from __future__ import unicode_literals
 SECRET_KEY = 'Not a secret key at all, actually'
 
 DEBUG = True

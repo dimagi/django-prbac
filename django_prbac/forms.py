@@ -1,15 +1,7 @@
-# Use Modern Python
-from __future__ import unicode_literals, absolute_import, print_function
-
-# System imports
-
-# Django imports
 from django.forms import ValidationError, CharField, TextInput
 
-# External libraries
 import six
 
-# Local imports
 import django_prbac.csv
 
 

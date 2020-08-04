@@ -1,13 +1,6 @@
-# Use Modern Python
-from __future__ import unicode_literals, absolute_import, print_function
-
-# Django imports
 from django.db import models
 
-# External libraries
 import six
-
-# Local imports
 import django_prbac.csv
 from django_prbac.forms import StringListFormField
 

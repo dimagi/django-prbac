@@ -1,14 +1,8 @@
-# Use modern Python
-from __future__ import unicode_literals, absolute_import, print_function
-
-# Django imports
 from django import forms
 from django.contrib import admin
 
-# External librariess
 import simplejson
 
-# Local imports
 import django_prbac.csv
 from django_prbac.models import *
 from django_prbac.forms import StringSetInput

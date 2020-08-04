@@ -1,11 +1,6 @@
-# Use Modern Python
-from __future__ import unicode_literals, absolute_import, print_function
-
-# Django imports
 from django.test import TestCase
 from django.http import HttpRequest
 
-# Local imports
 from django_prbac.decorators import requires_privilege
 from django_prbac.exceptions import PermissionDenied
 from django_prbac.models import Role
