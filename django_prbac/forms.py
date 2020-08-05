@@ -4,7 +4,7 @@ import django_prbac.csv
 
 
 class StringListInput(TextInput):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if isinstance(value, str):
             return super(StringListInput, self).render(name, value)
         else:
@@ -13,7 +13,7 @@ class StringListInput(TextInput):
 
 
 class StringSetInput(TextInput):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if isinstance(value, str):
             return super(StringSetInput, self).render(name, value)
         else:
