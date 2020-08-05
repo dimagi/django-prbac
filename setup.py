@@ -30,9 +30,9 @@ setup(
     packages=find_packages(),
     zip_safe=False,
     install_requires=[
-        # avoid django 2 <2.2.10 and django 3 < 3.0.3
+        # avoid django 2 <2.2.10 and django 3 < 3.0.7
         # https://github.com/advisories/GHSA-hmr4-m2h5-33qx
-        'django>=2.2.10,!=3.0.0,!=3.0.1,!=3.0.2,<4',
+        'django>=2.2.13,!=3.0.0,!=3.0.1,!=3.0.2,!=3.0.3,!=3.0.4,!=3.0.5,!=3.0.6,<4',
         'jsonfield>=1.0.3,<3',
         'simplejson',
     ],
