@@ -1,14 +1,8 @@
-# Use modern Python
-from __future__ import unicode_literals, absolute_import, print_function
-
-# Standard Library Imports
 import uuid
 from random import choice
 
-# Django imports
 from django.contrib.auth.models import User
 
-# Local Imports
 from django_prbac.models import *
 
 __all__ = [

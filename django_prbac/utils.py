@@ -1,8 +1,5 @@
-# Use modern Python
-from __future__ import unicode_literals, absolute_import, print_function
 import warnings
 
-# Local Imports
 from django_prbac.exceptions import PermissionDenied
 from django_prbac.models import Role, UserRole
 

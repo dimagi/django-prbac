@@ -1,11 +1,6 @@
-# Use modern Python
-from __future__ import unicode_literals, absolute_import, print_function
-
-# Standard Library Imports
 import time
 import weakref
 
-# Django imports
 from django import VERSION
 from django.db import models
 from django.conf import settings
@@ -15,11 +10,8 @@ else:
     def python_2_unicode_compatible(fn):
         return fn
 
-
-# External Library imports
 import jsonfield
 
-# Local imports
 from django_prbac.fields import StringSetField
 
 

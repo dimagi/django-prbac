@@ -1,18 +1,7 @@
-# Use modern Python
-from __future__ import unicode_literals, absolute_import, print_function
-
-# Standard Library Imports
-
-# Django imports
 from django.test import TestCase  # https://code.djangoproject.com/ticket/20913
 
-# External Library imports
-
-# Local imports
-from django_prbac.models import *
+from django_prbac.models import Role
 from django_prbac import arbitrary
-from six.moves import range
-from six.moves import zip
 
 
 class TestRole(TestCase):
@@ -73,7 +62,6 @@ class TestRole(TestCase):
         self.assertTrue(subrole.instantiate({}).has_privilege(superrole1.instantiate({})))
         self.assertFalse(subrole.instantiate({}).has_privilege(superrole2.instantiate({})))
 
-
     def test_has_permission_immediate_params(self):
         subrole = arbitrary.role()
         superrole1 = arbitrary.role(parameters=set(['one']))
@@ -81,7 +69,6 @@ class TestRole(TestCase):
 
         self.assertTrue(subrole.instantiate({}).has_privilege(superrole1.instantiate(dict(one='foo'))))
         self.assertFalse(subrole.instantiate({}).has_privilege(superrole1.instantiate(dict(one='baz'))))
-
 
     def test_unsaved_role_does_not_have_permission(self):
         role1 = Role()
@@ -102,8 +89,8 @@ class TestGrant(TestCase):
         parameters = ['one']
 
         superrole = arbitrary.role(parameters=parameters)
-        grant = arbitrary.grant(to_role=superrole, assignment={'one':'hello'})
-        self.assertEqual(grant.instantiated_to_role({}).assignment, {'one':'hello'})
+        grant = arbitrary.grant(to_role=superrole, assignment={'one': 'hello'})
+        self.assertEqual(grant.instantiated_to_role({}).assignment, {'one': 'hello'})
 
         grant = arbitrary.grant(to_role=superrole, assignment={'two': 'goodbye'})
         self.assertEqual(grant.instantiated_to_role({}).assignment, {})
