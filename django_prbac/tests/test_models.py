@@ -1,6 +1,6 @@
 from django.test import TestCase  # https://code.djangoproject.com/ticket/20913
 
-from django_prbac.models import Role
+from django_prbac.models import Role, Grant
 from django_prbac import arbitrary
 
 
@@ -94,6 +94,18 @@ class TestGrant(TestCase):
 
         grant = arbitrary.grant(to_role=superrole, assignment={'two': 'goodbye'})
         self.assertEqual(grant.instantiated_to_role({}).assignment, {})
+
+    def test_query_grant_assignments(self):
+        """
+        Test we can search grants using features in newer JSONField
+        """
+
+        user = arbitrary.role()
+        privilege = arbitrary.role(parameters={'thing'})
+        for thing in ['thingone', 'thingtwo']:
+            arbitrary.grant(to_role=privilege, from_role=user, assignment={'thing': thing})
+
+        assert Grant.objects.filter(from_role=user, assignment__thing='thingone').count() == 1
 
 
 class TestUserRole(TestCase):
