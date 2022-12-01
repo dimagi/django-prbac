@@ -1,7 +1,5 @@
 language: python
 python:
- - "3.5"
- - "3.6"
  - "3.7"
  - "3.8"
 env:
@@ -17,7 +15,3 @@ after_success:
  - coverage report
  - coveralls
 
-matrix:
-  exclude:
-  - python: "3.5"
-    env: DJANGO_VERSION_MIN=3.0.7 DJANGO_VERSION_MAX=4.0
