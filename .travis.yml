@@ -2,6 +2,7 @@ language: python
 python:
  - "3.7"
  - "3.8"
+ - "3.9"
 env:
  - DJANGO_VERSION_MIN=2.2 DJANGO_VERSION_MAX=3.0
  - DJANGO_VERSION_MIN=3.0.7 DJANGO_VERSION_MAX=4.0
