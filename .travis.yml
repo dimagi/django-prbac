@@ -15,3 +15,6 @@ after_success:
  - coverage report
  - coveralls
 
+jobs:
+  allow_failures: 
+  - python: "3.7"  # because pip install coveralls fails
