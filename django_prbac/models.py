@@ -10,9 +10,8 @@ else:
     def python_2_unicode_compatible(fn):
         return fn
 
-import jsonfield
-
 from django_prbac.fields import StringSetField
+from django_jsonfield_backport.models import JSONField
 
 
 __all__ = [
@@ -208,7 +207,7 @@ class Grant(ValidatingModel, models.Model):
         on_delete=models.CASCADE,
     )
 
-    assignment = jsonfield.JSONField(
+    assignment = JSONField(
         help_text='Assignment from parameters (strings) to values (any JSON-compatible value)',
         blank=True,
         default=dict,

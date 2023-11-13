@@ -33,7 +33,7 @@ setup(
         # avoid django 2 <2.2.10 and django 3 < 3.0.7
         # https://github.com/advisories/GHSA-hmr4-m2h5-33qx
         'django>=2.2.13,!=3.0.0,!=3.0.1,!=3.0.2,!=3.0.3,!=3.0.4,!=3.0.5,!=3.0.6,<4',
-        'jsonfield>=1.0.3,<4',
+        'django-jsonfield-backport>=1.0,<2',
         'simplejson',
     ],
     classifiers=[
