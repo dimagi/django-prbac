@@ -28,6 +28,8 @@ jobs:
         run: |
           coverage run --source='django_prbac' `which django-admin.py` test django_prbac --settings django_prbac.mock_settings --traceback
       - name: report coverage stats
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           coverage report 
-          coveralls 
+          coveralls --service=github
