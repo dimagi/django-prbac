@@ -71,10 +71,16 @@ class TestRole(TestCase):
         self.assertFalse(subrole.instantiate({}).has_privilege(superrole1.instantiate(dict(one='baz'))))
 
     def test_unsaved_role_does_not_have_permission(self):
+        import django
         role1 = Role()
         role2 = arbitrary.role()
-        self.assertFalse(role1.has_privilege(role2))
-        self.assertFalse(role2.has_privilege(role1))
+        if django.VERSION >= (4, 0):
+            with self.assertRaises(ValueError):
+                self.assertFalse(role1.has_privilege(role2))
+                self.assertFalse(role2.has_privilege(role1))
+        else:
+            self.assertFalse(role1.has_privilege(role2))
+            self.assertFalse(role2.has_privilege(role1))
 
 
 class TestGrant(TestCase):
