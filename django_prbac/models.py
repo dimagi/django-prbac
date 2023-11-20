@@ -145,11 +145,11 @@ class Role(ValidatingModel, models.Model):
             except AttributeError:
                 pass
         try:
-            return [membership.instantiated_to_role(assignment)
-                    for membership in self.memberships_granted.all()]
+            memberships = self.memberships_granted.all()
         except ValueError:
             # Django 4 raises ValueError if fk relationship is accessed prior to save
             return []
+        return [m.instantiated_to_role(assignment) for m in memberships]
 
     def instantiate(self, assignment):
         """
