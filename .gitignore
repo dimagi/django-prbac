@@ -56,3 +56,6 @@ nosetests.xml
 
 /docs/_build
 /django-prbac.db
+
+# virtualenv
+.python-version
