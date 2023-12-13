@@ -18,9 +18,9 @@ example of this in practice is `PostgreSQL roles and privileges
 <http://www.postgresql.org/docs/devel/static/user-manag.html>`_.
 
 The roles and privileges are whatever abstract concepts make sense for your system. It is up
-to application code to determine what actions to take based on the privileges granted. This
-can, of course, be implemented in terms of a lower-level permission system such as
-row-level or object-level access control lists (ACLs).
+to application code to determine what actions to take based on the privileges granted. You can
+use django-prbac to implement lower level concepts such as row-level or object-level access
+control.
 
 **Parameterized role-based access control (PRBAC)** adds parameters
 to roles and privileges. Now, for example, you might grant ``"Reporting(organization="Dimagi",area="Finance")``
