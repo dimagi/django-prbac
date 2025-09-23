@@ -49,14 +49,6 @@ django_prbac Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`mock_settings` Module
----------------------------
-
-.. automodule:: django_prbac.mock_settings
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 :mod:`models` Module
 --------------------
 
@@ -79,5 +71,4 @@ Subpackages
 .. toctree::
 
     django_prbac.migrations
-    django_prbac.tests
 
