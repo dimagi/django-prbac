@@ -42,6 +42,10 @@ jobs:
     needs: [configure]
     runs-on: ubuntu-22.04
     strategy:
+      # coveralls frequently fails with 500 errors, retrying usually helps.
+      # The default fail-fast=true would stop the running jobs on the first
+      # failure, which can make it harder to get all jobs passing.
+      fail-fast: false
       matrix:
         python: ${{ fromJSON(needs.configure.outputs.python_versions) }}
         django: ${{ fromJSON(needs.configure.outputs.django_versions) }}
