@@ -35,9 +35,6 @@ dependencies = [
 Homepage = "http://github.com/dimagi/django-prbac"
 Repository = "https://github.com/dimagi/django-prbac"
 
-[tool.setuptools]
-zip-safe = false
-
 [tool.setuptools.packages.find]
 include = ["django_prbac*"]
 
