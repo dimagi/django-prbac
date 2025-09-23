@@ -14,7 +14,7 @@
 import sys, os, re
 from io import open
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'django_prbac.mock_settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the

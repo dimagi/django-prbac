@@ -5,29 +5,63 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
 
 jobs:
+  configure:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Read Python versions from pyproject.toml
+      id: read-python-versions
+      # produces output like: python_versions=[ "3.9", "3.10", "3.11", "3.12" ]
+      run: >-
+        echo "python_versions=$(
+        grep -oP '(?<=Language :: Python :: )\d\.\d+' pyproject.toml
+        | jq --raw-input .
+        | jq --slurp .
+        | tr '\n' ' '
+        )" >> $GITHUB_OUTPUT
+    - name: Read Django versions from pyproject.toml
+      id: read-django-versions
+      # django_versions=[ "Django~=4.2.0", "Django~=5.1.0", "Django~=5.2.0" ]
+      run: >-
+        echo "django_versions=$(
+        grep -oP '(?<=Framework :: Django :: )\d+\.\d+' pyproject.toml
+        | sed -E 's/(.+)/Django~=\1.0/'
+        | jq --raw-input .
+        | jq --slurp .
+        | tr '\n' ' '
+        )" >> $GITHUB_OUTPUT
+    outputs:
+      python_versions: ${{ steps.read-python-versions.outputs.python_versions }}
+      django_versions: ${{ steps.read-django-versions.outputs.django_versions }}
+
   build:
+    needs: [configure]
     runs-on: ubuntu-22.04
-    
     strategy:
       matrix:
-        python-version: [ "3.8", "3.9", "3.10", "3.11" ]
-        django-version: [ "3.2.*", "4.2.*" ]
+        python: ${{ fromJSON(needs.configure.outputs.python_versions) }}
+        django: ${{ fromJSON(needs.configure.outputs.django_versions) }}
+        exclude:
+        - {python: '3.9', django: 'Django~=5.1.0'}
+        - {python: '3.9', django: 'Django~=5.2.0'}
 
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.python }}
       - name: install dependencies
         run: |
-          pip install django==${{ matrix.django-version }}
+          pip install ${{ matrix.django }}
           pip install -e .
           pip install coverage coveralls
       - name: run tests
         run: |
-          coverage run --source='django_prbac' `which django-admin` test django_prbac --settings django_prbac.mock_settings --traceback
+          coverage run --source='django_prbac' `which django-admin` test --pythonpath . --settings tests.settings --traceback
       - name: report coverage stats
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
