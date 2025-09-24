@@ -23,11 +23,11 @@ __all__ = [
 ]
 
 
-class ValidatingModel(object):
+class ValidatingModel:
     def save(self, force_insert=False, force_update=False, **kwargs):
         if not (force_insert or force_update):
             self.full_clean()   # Will raise ValidationError if needed
-        super(ValidatingModel, self).save(force_insert, force_update, **kwargs)
+        super().save(force_insert=force_insert, force_update=force_update, **kwargs)
 
 
 @python_2_unicode_compatible
