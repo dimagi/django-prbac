@@ -259,6 +259,9 @@ class UserRole(ValidatingModel, models.Model):
     def has_privilege(self, privilege):
         return self.role.has_privilege(privilege)
 
+    def __hash__(self):
+        return hash(self.user_id) ^ hash(self.role_id)
+
     def __eq__(self, other):
         return self.user == other.user and self.role == other.role
 
